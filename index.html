@@ -1182,13 +1182,66 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 function handleWaitlist() {
   const input = document.getElementById('emailInput');
+  const btn = document.querySelector('.waitlist-btn');
   const email = input.value.trim();
-  if (email && email.includes('@')) {
-    input.value = '';
-    input.placeholder = 'The gates are open. We will find you.';
-    input.style.borderColor = 'var(--gold)';
-    input.style.color = 'var(--gold)';
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    input.style.borderColor = '#8b2020';
+    input.placeholder = 'Enter a valid email address';
+    return;
   }
+
+  // Disable while submitting
+  btn.disabled = true;
+  btn.textContent = '...';
+  input.disabled = true;
+
+  const SUPABASE_URL = 'https://bixosvxhmwasgbiwqnew.supabase.co';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpeG9zdnhobXdhc2diaXdxbmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MjE1NzUsImV4cCI6MjA5NDI5NzU3NX0.CIRBHs6kjsc49T_6c7n4J3mWn8Eftc7UOc8XQZnV1m4';
+
+  fetch(SUPABASE_URL + '/rest/v1/arcis_waitlist', {
+    method: 'POST',
+    headers: {
+      'apikey': ANON_KEY,
+      'Authorization': 'Bearer ' + ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({
+      email: email.toLowerCase(),
+      source: 'landing_page',
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent
+    })
+  })
+  .then(function(res) {
+    if (res.status === 201) {
+      // Success
+      input.value = '';
+      input.placeholder = 'The gates are open. We will find you.';
+      input.style.borderColor = 'var(--gold)';
+      input.style.color = 'var(--gold)';
+      btn.textContent = '\u2713';
+      btn.style.background = 'var(--gold)';
+    } else if (res.status === 409) {
+      // Duplicate
+      input.value = '';
+      input.placeholder = 'You are already within the citadel.';
+      input.style.borderColor = 'var(--gold)';
+      input.style.color = 'var(--gold)';
+      btn.textContent = '\u2713';
+      btn.style.background = 'var(--gold)';
+    } else {
+      throw new Error('Failed');
+    }
+  })
+  .catch(function() {
+    input.placeholder = 'Something went wrong. Try again.';
+    input.style.borderColor = '#8b2020';
+    btn.textContent = 'Enter';
+    btn.disabled = false;
+    input.disabled = false;
+  });
 }
 document.getElementById('emailInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') handleWaitlist();
