@@ -194,15 +194,23 @@
     opacity: 0.35;
   }
 
-  /* Gradient overlay — dark edges, slightly lighter center for depth */
+  /* Gradient overlay — symmetric fade on all edges */
   .hero-bg::after {
     content: '';
     position: absolute;
     inset: 0;
     background:
       linear-gradient(180deg, var(--obsidian) 0%, transparent 25%, transparent 60%, var(--obsidian) 100%),
-      linear-gradient(90deg, var(--obsidian) 0%, transparent 30%, transparent 70%, var(--obsidian) 100%),
-      radial-gradient(ellipse at center 40%, transparent 0%, var(--obsidian) 75%);
+      linear-gradient(90deg, var(--obsidian) 0%, transparent 35%, transparent 65%, var(--obsidian) 100%);
+  }
+
+  /* Extra vignette for smooth edge dissolve */
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 80% at center 45%, transparent 30%, var(--obsidian) 100%);
+    z-index: 1;
   }
 
   /* Subtle gold glow on top of image */
