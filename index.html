@@ -1210,10 +1210,10 @@ function handleWaitlist() {
   btn.textContent = '...';
   input.disabled = true;
 
-  const SUPABASE_URL = 'https://lzoigpyxdpkhtxhyviym.supabase.co';
-  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2lncHl4ZHBraHR4aHl2aXltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjkwODUsImV4cCI6MjA5NjM0NTA4NX0.AtxcJ9iuAd08mtUug6gw6lNCXLRYgCa6AWEwWTlLAwk';
+  const SUPABASE_URL = 'https://ulluljrkkhtsimiwflen.supabase.co';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsbHVsanJra2h0c2ltaXdmbGVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5MDY4ODIsImV4cCI6MjA5NzQ4Mjg4Mn0.uQxOa_prKUWwT7S-nXnQYpGorNF_SZlltvmOi1yvysE';
 
-  fetch(SUPABASE_URL + '/rest/v1/arcis_waitlist', {
+  fetch(SUPABASE_URL + '/rest/v1/waitlist', {
     method: 'POST',
     headers: {
       'apikey': ANON_KEY,
