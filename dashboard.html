@@ -203,6 +203,54 @@ a:hover { color: var(--ivory); }
 }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* Wallet */
+.wallet-btn {
+  background: transparent; border: 1px solid var(--gold); border-radius: 6px;
+  color: var(--gold); padding: 8px 16px; font-size: 11px; font-weight: 500;
+  cursor: pointer; letter-spacing: 0.05em; font-family: var(--font-body);
+  transition: all 0.3s;
+}
+.wallet-btn:hover { background: rgba(212,175,105,0.1); }
+.wallet-btn.connected { border-color: var(--green); color: var(--green); }
+
+/* Actions */
+.actions-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-top: 24px; }
+.action-tabs { display: flex; gap: 0; margin-bottom: 16px; }
+.action-tab {
+  flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 10px;
+  color: var(--ivory-muted); font-size: 12px; text-align: center; cursor: pointer;
+  letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-body); transition: all 0.2s;
+}
+.action-tab:first-child { border-radius: 6px 0 0 6px; }
+.action-tab:last-child { border-radius: 0 6px 6px 0; }
+.action-tab.active { background: var(--gold-muted); color: var(--gold); border-color: rgba(212,175,105,0.3); }
+.action-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 14px; color: var(--ivory); font-size: 16px;
+  font-family: var(--font-mono); outline: none; margin-bottom: 12px;
+}
+.action-input:focus { border-color: var(--gold); }
+.action-submit {
+  width: 100%; background: var(--gold); color: var(--bg); border: none;
+  border-radius: 6px; padding: 14px; font-size: 13px; font-weight: 600;
+  cursor: pointer; letter-spacing: 0.06em; font-family: var(--font-body);
+}
+.action-submit:hover { background: var(--gold-bright); }
+.action-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.action-info { font-size: 11px; color: var(--ivory-muted); margin-top: 8px; text-align: center; }
+.action-result { margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 6px; border: 1px solid rgba(74,222,128,0.2); font-size: 12px; color: var(--green); display: none; }
+
+/* Events */
+.events-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-top: 24px; }
+.event-row { display: grid; grid-template-columns: 70px 1fr 100px 80px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.event-type { font-weight: 500; letter-spacing: 0.04em; }
+.event-type.deposit { color: var(--green); }
+.event-type.withdraw { color: var(--blue); }
+.event-addr { color: var(--ivory-muted); font-family: var(--font-mono); font-size: 11px; }
+.event-amount { text-align: right; color: var(--ivory); }
+.event-time { text-align: right; color: var(--ivory-muted); font-size: 10px; }
+.event-empty { text-align: center; color: var(--ivory-muted); padding: 24px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -266,6 +314,7 @@ a:hover { color: var(--ivory); }
     <span class="header-badge">BASE SEPOLIA</span>
   </div>
   <div class="header-status">
+    <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
     <div class="status-dot loading" id="statusDot"></div>
     <span class="status-text" id="statusText">Loading...</span>
   </div>
@@ -345,6 +394,34 @@ a:hover { color: var(--ivory); }
         </div>
       </div>
       <button class="try-link" id="tryDeployer">Try deployer address</button>
+    </div>
+
+    <!-- Deposit / Withdraw Actions (shown when wallet connected) -->
+    <div class="actions-box" id="actionsBox" style="display:none">
+      <div class="action-tabs">
+        <button class="action-tab active" id="tabDeposit" onclick="setAction('deposit')">Deposit</button>
+        <button class="action-tab" id="tabWithdraw" onclick="setAction('withdraw')">Withdraw</button>
+      </div>
+      <div id="actionDeposit">
+        <input class="action-input" type="text" id="depositAmount" placeholder="USDC amount (e.g. 1000)">
+        <button class="action-submit" id="depositBtn" onclick="executeDeposit()">Deposit USDC</button>
+        <div class="action-info" id="depositPreview"></div>
+      </div>
+      <div id="actionWithdraw" style="display:none">
+        <input class="action-input" type="text" id="withdrawShares" placeholder="raUSDC shares to redeem">
+        <button class="action-submit" id="withdrawBtn" onclick="executeWithdraw()">Withdraw USDC</button>
+        <div class="action-info" id="withdrawPreview"></div>
+        <button class="try-link" onclick="withdrawMax()" style="margin-top:4px">Withdraw all</button>
+      </div>
+      <div class="action-result" id="actionResult"></div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="events-box" aria-label="Recent protocol activity">
+      <div class="stat-label" style="margin-bottom:16px">RECENT ACTIVITY</div>
+      <div id="eventsList">
+        <div class="event-empty">Loading events...</div>
+      </div>
     </div>
   </section>
 
@@ -558,6 +635,229 @@ document.getElementById('tryDeployer').addEventListener('click', function() {
 // ── Init ──
 fetchAll();
 setInterval(fetchAll, 15000);
+fetchEvents();
+
+// ── Wallet Connect ──
+var connectedAccount = null;
+var walletProvider = null;
+
+async function connectWallet() {
+  if (connectedAccount) { disconnectWallet(); return; }
+
+  if (typeof window.ethereum === 'undefined') {
+    alert('No wallet detected. Install MetaMask, Coinbase Wallet, or any EVM wallet.');
+    return;
+  }
+
+  try {
+    walletProvider = window.ethereum;
+    var accounts = await walletProvider.request({ method: 'eth_requestAccounts' });
+    connectedAccount = accounts[0];
+
+    // Switch to Base Sepolia if needed
+    try {
+      await walletProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x14a34' }], // 84532
+      });
+    } catch(e) {
+      if (e.code === 4902) {
+        await walletProvider.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x14a34',
+            chainName: 'Base Sepolia',
+            rpcUrls: ['https://sepolia.base.org'],
+            nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+            blockExplorerUrls: ['https://sepolia.basescan.org'],
+          }],
+        });
+      }
+    }
+
+    var btn = document.getElementById('walletBtn');
+    btn.textContent = connectedAccount.slice(0,6) + '...' + connectedAccount.slice(-4);
+    btn.classList.add('connected');
+    document.getElementById('actionsBox').style.display = 'block';
+
+    // Auto-lookup connected address
+    document.getElementById('lookupInput').value = connectedAccount;
+    lookupPosition();
+
+    // Listen for account changes
+    walletProvider.on('accountsChanged', function(accs) {
+      if (accs.length === 0) disconnectWallet();
+      else { connectedAccount = accs[0]; connectWallet(); }
+    });
+
+  } catch(e) { console.error('Connect error:', e); }
+}
+
+function disconnectWallet() {
+  connectedAccount = null;
+  var btn = document.getElementById('walletBtn');
+  btn.textContent = 'Connect Wallet';
+  btn.classList.remove('connected');
+  document.getElementById('actionsBox').style.display = 'none';
+}
+
+// ── Action tabs ──
+function setAction(type) {
+  document.getElementById('tabDeposit').classList.toggle('active', type === 'deposit');
+  document.getElementById('tabWithdraw').classList.toggle('active', type === 'withdraw');
+  document.getElementById('actionDeposit').style.display = type === 'deposit' ? 'block' : 'none';
+  document.getElementById('actionWithdraw').style.display = type === 'withdraw' ? 'block' : 'none';
+  document.getElementById('actionResult').style.display = 'none';
+}
+
+// ── Deposit ──
+async function executeDeposit() {
+  if (!connectedAccount || !walletProvider) return;
+  var amountStr = document.getElementById('depositAmount').value.trim();
+  if (!amountStr || isNaN(amountStr)) return;
+
+  var amount = BigInt(Math.floor(parseFloat(amountStr) * 1e6));
+  var btn = document.getElementById('depositBtn');
+  btn.disabled = true; btn.textContent = 'Approving...';
+
+  try {
+    // Approve USDC
+    var approveData = '0x095ea7b3' + padAddr(VAULT) + 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    await walletProvider.request({
+      method: 'eth_sendTransaction',
+      params: [{ from: connectedAccount, to: USDC_ADDR, data: approveData }],
+    });
+
+    btn.textContent = 'Depositing...';
+
+    // Deposit
+    var depositData = SEL.totalAssets.slice(0,2) + '095ea7b3'.slice(0,0);
+    depositData = '0xb6b55f25' + padUint(amount); // deposit(uint256)
+    var txHash = await walletProvider.request({
+      method: 'eth_sendTransaction',
+      params: [{ from: connectedAccount, to: VAULT, data: depositData }],
+    });
+
+    var result = document.getElementById('actionResult');
+    result.style.display = 'block';
+    result.innerHTML = 'Deposit submitted. TX: <a href="https://base-sepolia.blockscout.com/tx/' + txHash + '" target="_blank" style="color:var(--gold)">' + txHash.slice(0,14) + '...</a>';
+    document.getElementById('depositAmount').value = '';
+
+    // Refresh data
+    setTimeout(function() { fetchAll(); lookupPosition(); fetchEvents(); }, 5000);
+
+  } catch(e) { console.error('Deposit error:', e); }
+  btn.disabled = false; btn.textContent = 'Deposit USDC';
+}
+
+// ── Withdraw ──
+async function executeWithdraw() {
+  if (!connectedAccount || !walletProvider) return;
+  var sharesStr = document.getElementById('withdrawShares').value.trim();
+  if (!sharesStr || isNaN(sharesStr)) return;
+
+  var shares = BigInt(Math.floor(parseFloat(sharesStr) * 1e6));
+  var btn = document.getElementById('withdrawBtn');
+  btn.disabled = true; btn.textContent = 'Withdrawing...';
+
+  try {
+    var withdrawData = '0x2e1a7d4d' + padUint(shares); // withdraw(uint256)
+    var txHash = await walletProvider.request({
+      method: 'eth_sendTransaction',
+      params: [{ from: connectedAccount, to: VAULT, data: withdrawData }],
+    });
+
+    var result = document.getElementById('actionResult');
+    result.style.display = 'block';
+    result.innerHTML = 'Withdrawal submitted. TX: <a href="https://base-sepolia.blockscout.com/tx/' + txHash + '" target="_blank" style="color:var(--gold)">' + txHash.slice(0,14) + '...</a>';
+    document.getElementById('withdrawShares').value = '';
+
+    setTimeout(function() { fetchAll(); lookupPosition(); fetchEvents(); }, 5000);
+
+  } catch(e) { console.error('Withdraw error:', e); }
+  btn.disabled = false; btn.textContent = 'Withdraw USDC';
+}
+
+async function withdrawMax() {
+  if (!connectedAccount) return;
+  var sh = await ethCall(VAULT, SEL.balanceOf + padAddr(connectedAccount));
+  var shares = decU(sh);
+  if (shares === 0n) return;
+  document.getElementById('withdrawShares').value = (Number(shares) / 1e6).toString();
+}
+
+// ── Deposit amount preview ──
+document.getElementById('depositAmount').addEventListener('input', async function() {
+  var val = this.value.trim();
+  if (!val || isNaN(val)) { document.getElementById('depositPreview').textContent = ''; return; }
+  var amount = BigInt(Math.floor(parseFloat(val) * 1e6));
+  try {
+    var sh = await ethCall(VAULT, SEL.totalAssets.slice(0,2) + 'ef8b30f7' + padUint(amount)); // previewDeposit
+    // Actually use the right selector
+    sh = await ethCall(VAULT, '0xef8b30f7' + padUint(amount));
+    document.getElementById('depositPreview').textContent = 'You will receive ~' + fmtU(decU(sh),2) + ' raUSDC shares';
+  } catch(e) {}
+});
+
+// ── Event Indexing ──
+async function fetchEvents() {
+  try {
+    // Fetch last 100 blocks of Deposit and Withdraw events
+    var blockNum = await fetch(RPC, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({jsonrpc:'2.0',method:'eth_blockNumber',params:[],id:1})
+    }).then(function(r) { return r.json(); }).then(function(d) { return d.result; });
+
+    var fromBlock = '0x' + (parseInt(blockNum, 16) - 5000).toString(16);
+
+    // Deposit event topic: keccak256("Deposit(address,uint256,uint256)")
+    var depositTopic = '0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15';
+    // Withdraw event topic: keccak256("Withdraw(address,uint256,uint256)")
+    var withdrawTopic = '0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568';
+
+    var logsRes = await fetch(RPC, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({jsonrpc:'2.0',method:'eth_getLogs',params:[{
+        address: VAULT,
+        fromBlock: fromBlock,
+        toBlock: 'latest',
+        topics: [[depositTopic, withdrawTopic]]
+      }],id:2})
+    });
+    var logsData = await logsRes.json();
+    var logs = logsData.result || [];
+
+    var container = document.getElementById('eventsList');
+    if (logs.length === 0) {
+      container.innerHTML = '<div class="event-empty">No recent activity</div>';
+      return;
+    }
+
+    // Sort newest first
+    logs.reverse();
+    var html = '';
+    var shown = Math.min(logs.length, 10);
+    for (var i = 0; i < shown; i++) {
+      var log = logs[i];
+      var isDeposit = log.topics[0] === depositTopic;
+      var agent = '0x' + log.topics[1].slice(26);
+      var amount = BigInt(log.data.slice(0, 66));
+      var block = parseInt(log.blockNumber, 16);
+
+      html += '<div class="event-row">';
+      html += '<span class="event-type ' + (isDeposit ? 'deposit' : 'withdraw') + '">' + (isDeposit ? 'Deposit' : 'Withdraw') + '</span>';
+      html += '<span class="event-addr">' + agent.slice(0,8) + '...' + agent.slice(-4) + '</span>';
+      html += '<span class="event-amount">$' + fmtU(amount) + '</span>';
+      html += '<span class="event-time">Block ' + block + '</span>';
+      html += '</div>';
+    }
+    container.innerHTML = html;
+
+  } catch(e) {
+    console.error('Event fetch error:', e);
+    document.getElementById('eventsList').innerHTML = '<div class="event-empty">Could not load events</div>';
+  }
+}
 </script>
 </body>
 </html>
