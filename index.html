@@ -1009,7 +1009,7 @@
         <div class="section-inscription">Agent Treasury Interface</div>
         <h2 class="section-title">Tres Functiones.<br>Unum Foedus.</h2>
         <p class="section-sub" style="margin-bottom:28px;">
-          The ATI is an open interface standard. Three functions that any agent framework can call. elizaOS, LangChain, CrewAI, Lobstack.
+          The ATI is an open interface standard. Three functions that any agent framework can call. elizaOS, LangChain, CrewAI, AutoGPT.
         </p>
         <p class="section-sub">
           No dashboard. No approval flows. No wallet connect. Your agent calls <code style="color:var(--gold);font-family:'SF Mono',monospace;font-size:13px;">deposit()</code> and the citadel opens its gates.
@@ -1179,9 +1179,9 @@
   <div class="container">
     <div class="footer-left">Arcis Protocol &middot; MMXXVI</div>
     <div class="footer-links">
-      <a href="#">Docs</a>
-      <a href="#">GitHub</a>
-      <a href="#">Twitter</a>
+      <a href="https://github.com/Arcis-Protocol/docs" target="_blank">Docs</a>
+      <a href="https://github.com/Arcis-Protocol" target="_blank">GitHub</a>
+      <a href="https://x.com/ArcisProtocol" target="_blank">X</a>
     </div>
   </div>
 </footer>
@@ -1210,13 +1210,17 @@ function handleWaitlist() {
   btn.textContent = '...';
   input.disabled = true;
 
-  // Google Apps Script web app URL
-  // REPLACE THIS after deploying the Apps Script (see apps-script.js)
-  const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  const SUPABASE_URL = 'https://bixosvxhmwasgbiwqnew.supabase.co';
+  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpeG9zdnhobXdhc2diaXdxbmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MjE1NzUsImV4cCI6MjA5NDI5NzU3NX0.CIRBHs6kjsc49T_6c7n4J3mWn8Eftc7UOc8XQZnV1m4';
 
-  fetch(SCRIPT_URL, {
+  fetch(SUPABASE_URL + '/rest/v1/arcis_waitlist', {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
+    headers: {
+      'apikey': ANON_KEY,
+      'Authorization': 'Bearer ' + ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
     body: JSON.stringify({
       email: email.toLowerCase(),
       source: 'landing_page',
@@ -1224,19 +1228,23 @@ function handleWaitlist() {
       user_agent: navigator.userAgent
     })
   })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data.success) {
+  .then(function(res) {
+    if (res.status === 201) {
       input.value = '';
-      input.placeholder = data.duplicate
-        ? 'You are already within the citadel.'
-        : 'The gates are open. We will find you.';
+      input.placeholder = 'The gates are open. We will find you.';
+      input.style.borderColor = 'var(--gold)';
+      input.style.color = 'var(--gold)';
+      btn.textContent = '\u2713';
+      btn.style.background = 'var(--gold)';
+    } else if (res.status === 409) {
+      input.value = '';
+      input.placeholder = 'You are already within the citadel.';
       input.style.borderColor = 'var(--gold)';
       input.style.color = 'var(--gold)';
       btn.textContent = '\u2713';
       btn.style.background = 'var(--gold)';
     } else {
-      throw new Error(data.error || 'Failed');
+      throw new Error('Failed');
     }
   })
   .catch(function() {
