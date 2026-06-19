@@ -8,6 +8,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://arcis.money">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="preload" href="hero.jpg" as="image">
 
 <!-- Open Graph -->
 <meta property="og:title" content="Arcis — The Citadel of Agent Capital">
@@ -181,20 +182,42 @@
     justify-content: center;
     position: relative;
     padding-top: 80px;
+    overflow: hidden;
   }
 
-  /* Radial gold glow behind hero */
+  /* Hero background image */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url('hero.jpg') center center / cover no-repeat;
+    opacity: 0.35;
+  }
+
+  /* Gradient overlay — dark edges, slightly lighter center for depth */
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, var(--obsidian) 0%, transparent 25%, transparent 60%, var(--obsidian) 100%),
+      linear-gradient(90deg, var(--obsidian) 0%, transparent 30%, transparent 70%, var(--obsidian) 100%),
+      radial-gradient(ellipse at center 40%, transparent 0%, var(--obsidian) 75%);
+  }
+
+  /* Subtle gold glow on top of image */
   .hero::before {
     content: '';
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
-    transform: translate(-50%, -60%);
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(212,175,105,0.04) 0%, transparent 65%);
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212,175,105,0.06) 0%, transparent 60%);
     pointer-events: none;
-    filter: blur(60px);
+    filter: blur(80px);
+    z-index: 1;
   }
 
   /* Decorative column lines */
@@ -905,6 +928,7 @@
 
     /* Hero mobile fix */
     .hero { min-height: auto; padding: 120px 0 80px; }
+    .hero-bg { opacity: 0.25; background-position: center 30%; }
     .hero h1 { font-size: clamp(38px, 10vw, 60px); margin-bottom: 24px; }
     .hero-sub { font-size: 17px; margin-bottom: 40px; max-width: 340px; }
     .hero-actions { gap: 12px; }
@@ -955,6 +979,7 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
   <div class="container">
     <div class="hero-content">
       <div class="hero-inscription">
