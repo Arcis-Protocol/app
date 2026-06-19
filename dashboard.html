@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcis Protocol — Dashboard</title>
+<meta name="description" content="Live protocol dashboard for Arcis Protocol. View vault TVL, agent positions, credit utilization, and contract addresses on Base Sepolia.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://arcis.money/dashboard">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Arcis Protocol Dashboard">
+<meta property="og:description" content="Live agent vault data on Base. TVL, exchange rates, positions, and credit module stats.">
+<meta property="og:url" content="https://arcis.money/dashboard">
+<meta property="og:type" content="website">
+
+<!-- Structured Data for LLMs and Search -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Arcis Protocol Dashboard",
+  "url": "https://arcis.money/dashboard",
+  "applicationCategory": "DeFi Protocol Dashboard",
+  "operatingSystem": "Web",
+  "description": "Live protocol dashboard for Arcis Protocol — financial infrastructure for autonomous AI agents. View vault TVL, agent positions, exchange rates, credit module stats, and deployed contract addresses.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Arcis Protocol",
+    "url": "https://arcis.money",
+    "sameAs": [
+      "https://github.com/Arcis-Protocol",
+      "https://x.com/ArcisProtocol"
+    ]
+  },
+  "offers": {
+    "@type": "Offer",
+    "description": "Agent Treasury Interface (ATI) — deposit(), withdraw(), balance() for autonomous AI agents",
+    "category": "DeFi Yield Vault"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #08080A;
+  --surface: #0F0F12;
+  --surface-hover: #16161A;
+  --border: #1E1E24;
+  --border-hover: #2A2A32;
+  --gold: #D4AF69;
+  --gold-bright: #E2C47E;
+  --gold-muted: rgba(212,175,105,0.15);
+  --ivory: #E8E0D0;
+  --ivory-muted: #8A8478;
+  --green: #4ADE80;
+  --red: #EF4444;
+  --blue: #60A5FA;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Instrument Sans', -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ivory); font-family: var(--font-body); }
+a { color: var(--ivory-muted); text-decoration: none; }
+a:hover { color: var(--ivory); }
+
+/* Header */
+.header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-logo { font-family: var(--font-display); font-size: 20px; font-weight: 500; letter-spacing: 0.1em; color: var(--ivory); }
+.header-badge { font-size: 9px; color: var(--gold); border: 1px solid var(--gold); border-radius: 3px; padding: 2px 6px; letter-spacing: 0.1em; margin-left: 10px; }
+.header-status { display: flex; align-items: center; gap: 8px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.status-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
+.status-text { font-size: 11px; color: var(--ivory-muted); }
+
+/* Tabs */
+.tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; }
+.tab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--ivory-muted); padding: 14px 20px; font-size: 13px;
+  cursor: pointer; letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--font-body); transition: all 0.2s;
+}
+.tab.active { color: var(--ivory); border-bottom-color: var(--gold); }
+.tab:hover { color: var(--ivory); }
+
+/* Content */
+.content { padding: 24px; max-width: 920px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Stat Cards */
+.stats-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px 24px; flex: 1; min-width: 180;
+}
+.stat-label { font-size: 12px; color: var(--ivory-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 300; color: var(--ivory); font-family: var(--font-display); }
+.stat-value.gold { color: var(--gold); }
+.stat-value.green { color: var(--green); }
+.stat-value.blue { color: var(--blue); }
+.stat-sub { font-size: 12px; color: var(--ivory-muted); margin-top: 4px; }
+
+/* Capacity bar */
+.capacity-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+.capacity-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; }
+.capacity-track { background: var(--bg); border-radius: 4px; height: 8px; overflow: hidden; }
+.capacity-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); border-radius: 4px; transition: width 0.6s ease; }
+.capacity-footer { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--ivory-muted); }
+
+/* Status bar */
+.status-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 6px;
+  font-size: 12px; margin-bottom: 24px;
+}
+.status-bar.active { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); color: var(--green); }
+.status-bar.paused { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--red); }
+.status-bar .dot { width: 6px; height: 6px; border-radius: 50%; }
+.status-bar.active .dot { background: var(--green); }
+.status-bar.paused .dot { background: var(--red); }
+
+/* Lookup */
+.lookup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.lookup-row { display: flex; gap: 8px; }
+.lookup-input {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 14px; color: var(--ivory);
+  font-size: 13px; font-family: var(--font-mono); outline: none;
+}
+.lookup-input:focus { border-color: var(--gold); }
+.lookup-input::placeholder { color: var(--ivory-muted); }
+.lookup-btn {
+  background: var(--gold); color: var(--bg); border: none; border-radius: 6px;
+  padding: 10px 20px; font-size: 12px; font-weight: 600; cursor: pointer;
+  letter-spacing: 0.05em; font-family: var(--font-body);
+}
+.lookup-btn:hover { background: var(--gold-bright); }
+.lookup-result { margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+.lookup-result .addr { font-size: 11px; color: var(--ivory-muted); margin-bottom: 10px; font-family: var(--font-mono); word-break: break-all; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.result-item .label { font-size: 10px; color: var(--ivory-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+.result-item .val { font-size: 18px; font-family: var(--font-display); }
+.try-link { background: none; border: none; color: var(--ivory-muted); font-size: 11px; margin-top: 8px; cursor: pointer; text-decoration: underline; font-family: var(--font-body); }
+
+/* Contract rows */
+.contract-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.contract-name { color: var(--ivory); font-size: 14px; }
+.contract-tag { font-size: 10px; color: var(--gold); border: 1px solid rgba(212,175,105,0.3); border-radius: 4px; padding: 2px 6px; letter-spacing: 0.05em; margin-left: 8px; }
+.contract-addr { color: var(--ivory-muted); font-size: 13px; font-family: var(--font-mono); }
+.contract-addr:hover { color: var(--gold); }
+
+/* Tier table */
+.tier-header, .tier-row {
+  display: grid; grid-template-columns: 40px 1fr 80px 80px;
+  align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.tier-header { font-size: 10px; color: var(--ivory-muted); letter-spacing: 0.08em; padding: 8px 0; }
+.tier-row { font-size: 13px; }
+.tier-num { color: var(--gold); font-family: var(--font-display); font-size: 16px; }
+.tier-label { color: var(--ivory); }
+.tier-ratio { color: var(--ivory-muted); text-align: right; }
+.tier-discount { color: var(--green); text-align: right; }
+
+/* ATI code block */
+.ati-block { margin-top: 20px; padding: 16px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+.ati-block .label { font-size: 11px; color: var(--ivory-muted); margin-bottom: 8px; }
+.ati-block code { font-size: 12px; color: var(--gold); font-family: var(--font-mono); line-height: 1.8; display: block; }
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--border); padding: 16px 24px;
+  display: flex; justify-content: space-between; font-size: 11px;
+  color: var(--ivory-muted); margin-top: 40px;
+}
+
+/* LLM-readable hidden data block */
+.llm-data { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .stats-row { flex-direction: column; }
+  .stat-card { min-width: auto; }
+  .result-grid { grid-template-columns: 1fr; gap: 12px; }
+  .header { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .footer { flex-direction: column; gap: 8px; }
+  .tier-header, .tier-row { grid-template-columns: 32px 1fr 60px 60px; font-size: 12px; }
+  .content { padding: 16px; }
+}
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+</style>
+</head>
+<body>
+
+<!-- LLM / Agent Readable Protocol Data (Markdown format, hidden visually) -->
+<section class="llm-data" id="protocol-data" aria-label="Machine-readable protocol data">
+<pre id="llm-markdown">
+# Arcis Protocol — Live Data
+
+## Network
+- Chain: Base Sepolia (Chain ID: 84532)
+- RPC: https://sepolia.base.org
+
+## Contracts
+- ArcisVault (raUSDC): 0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d
+- AgentCredit: 0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC
+- ATIRouter: 0x0281e7D37683c585325004F84e0b94170c78d5B4
+- USDC (Mock): 0x29440A12f15fe6bDf5F624f4eeEB298CCb782f05
+
+## ATI Standard (Agent Treasury Interface)
+- deposit(uint256 amount) → uint256 shares
+- withdraw(uint256 shares) → uint256 amount
+- balance(address agent) → uint256 value
+
+## Live Metrics (auto-updated)
+- TVL: $LOADING
+- Exchange Rate: LOADING
+- raUSDC Supply: LOADING
+- Deposit Cap: LOADING
+- Remaining Capacity: LOADING
+- Reserve Balance: LOADING
+- Deployed Balance: LOADING
+- Vault Status: LOADING
+- Lending Pool: LOADING
+- Total Borrowed: LOADING
+- Credit Utilization: LOADING
+
+## Reputation Tiers (ERC-8004)
+| Tier | Score Range | Collateral Ratio | Rate Discount |
+|------|------------|-----------------|---------------|
+| 0 | No Identity | 200% | 0 bps |
+| 1 | 1-25 | 175% | 100 bps |
+| 2 | 26-50 | 150% | 200 bps |
+| 3 | 51-75 | 130% | 350 bps |
+| 4 | 76-100 | 115% | 500 bps |
+
+## Links
+- Website: https://arcis.money
+- GitHub: https://github.com/Arcis-Protocol
+- Docs: https://github.com/Arcis-Protocol/docs
+- SDK: https://github.com/Arcis-Protocol/sdk
+</pre>
+</section>
+
+<!-- Header -->
+<header class="header" role="banner">
+  <div>
+    <a href="/" style="text-decoration:none">
+      <span class="header-logo">ARCIS</span>
+    </a>
+    <span class="header-badge">BASE SEPOLIA</span>
+  </div>
+  <div class="header-status">
+    <div class="status-dot loading" id="statusDot"></div>
+    <span class="status-text" id="statusText">Loading...</span>
+  </div>
+</header>
+
+<!-- Tabs -->
+<nav class="tabs" role="tablist" aria-label="Dashboard sections">
+  <button class="tab active" role="tab" aria-selected="true" data-tab="vault">Vault</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="credit">Credit</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="contracts">Contracts</button>
+</nav>
+
+<main class="content" role="main">
+
+  <!-- VAULT TAB -->
+  <section class="tab-panel active" id="panel-vault" role="tabpanel" aria-label="Vault overview">
+    <div class="stats-row">
+      <article class="stat-card" aria-label="Total Value Locked">
+        <div class="stat-label">Total Value Locked</div>
+        <div class="stat-value gold" id="tvl">—</div>
+      </article>
+      <article class="stat-card" aria-label="Exchange Rate">
+        <div class="stat-label">Exchange Rate</div>
+        <div class="stat-value" id="rate">—</div>
+        <div class="stat-sub">USDC per raUSDC</div>
+      </article>
+      <article class="stat-card" aria-label="raUSDC Supply">
+        <div class="stat-label">raUSDC Supply</div>
+        <div class="stat-value" id="supply">—</div>
+        <div class="stat-sub">shares outstanding</div>
+      </article>
+    </div>
+
+    <div class="capacity-box" aria-label="Vault capacity">
+      <div class="capacity-header">
+        <span style="color:var(--ivory-muted)">VAULT CAPACITY</span>
+        <span style="color:var(--ivory)" id="capPct">—</span>
+      </div>
+      <div class="capacity-track"><div class="capacity-fill" id="capFill" style="width:0%"></div></div>
+      <div class="capacity-footer">
+        <span id="capDeposited">—</span>
+        <span id="capTotal">—</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <article class="stat-card" aria-label="Reserve balance">
+        <div class="stat-label">Reserve (Liquid)</div>
+        <div class="stat-value blue" id="reserve">—</div>
+        <div class="stat-sub" id="reservePct">—</div>
+      </article>
+      <article class="stat-card" aria-label="Deployed balance">
+        <div class="stat-label">Deployed (Yield)</div>
+        <div class="stat-value green" id="deployed">—</div>
+        <div class="stat-sub" id="deployedPct">—</div>
+      </article>
+    </div>
+
+    <div class="status-bar active" id="vaultStatus" aria-label="Vault status">
+      <div class="dot"></div>
+      <span id="vaultStatusText">Loading...</span>
+    </div>
+
+    <!-- Position Lookup -->
+    <div class="lookup-box" aria-label="Look up agent position">
+      <div class="stat-label" style="margin-bottom:12px">LOOK UP POSITION</div>
+      <div class="lookup-row">
+        <input class="lookup-input" type="text" id="lookupInput" placeholder="0x... agent or wallet address" aria-label="Agent address">
+        <button class="lookup-btn" id="lookupBtn" aria-label="Query position">QUERY</button>
+      </div>
+      <div id="lookupResult" style="display:none" class="lookup-result">
+        <div class="addr" id="lookupAddr"></div>
+        <div class="result-grid">
+          <div class="result-item"><div class="label">raUSDC Shares</div><div class="val" id="resShares">—</div></div>
+          <div class="result-item"><div class="label">Position Value</div><div class="val gold" id="resValue">—</div></div>
+          <div class="result-item"><div class="label">USDC Wallet</div><div class="val" id="resUSDC">—</div></div>
+        </div>
+      </div>
+      <button class="try-link" id="tryDeployer">Try deployer address</button>
+    </div>
+  </section>
+
+  <!-- CREDIT TAB -->
+  <section class="tab-panel" id="panel-credit" role="tabpanel" aria-label="Credit module">
+    <div class="stats-row">
+      <article class="stat-card"><div class="stat-label">Lending Pool</div><div class="stat-value green" id="lendingPool">—</div><div class="stat-sub">available to borrow</div></article>
+      <article class="stat-card"><div class="stat-label">Total Borrowed</div><div class="stat-value" id="totalBorrowed">—</div><div class="stat-sub">outstanding loans</div></article>
+      <article class="stat-card"><div class="stat-label">Utilization</div><div class="stat-value" id="creditUtil">—</div></article>
+    </div>
+
+    <div class="lookup-box">
+      <div class="stat-label" style="margin-bottom:16px">ERC-8004 REPUTATION TIERS</div>
+      <div class="tier-header"><span>TIER</span><span>LABEL</span><span style="text-align:right">RATIO</span><span style="text-align:right">DISCOUNT</span></div>
+      <div class="tier-row"><span class="tier-num">0</span><span class="tier-label">No Identity</span><span class="tier-ratio" id="ratio0">—</span><span class="tier-discount">0 bps</span></div>
+      <div class="tier-row"><span class="tier-num">I</span><span class="tier-label">Novice (1-25)</span><span class="tier-ratio" id="ratio1">—</span><span class="tier-discount">100 bps</span></div>
+      <div class="tier-row"><span class="tier-num">II</span><span class="tier-label">Active (26-50)</span><span class="tier-ratio" id="ratio2">—</span><span class="tier-discount">200 bps</span></div>
+      <div class="tier-row"><span class="tier-num">III</span><span class="tier-label">Established (51-75)</span><span class="tier-ratio" id="ratio3">—</span><span class="tier-discount">350 bps</span></div>
+      <div class="tier-row"><span class="tier-num">IV</span><span class="tier-label">Elite (76-100)</span><span class="tier-ratio" id="ratio4">—</span><span class="tier-discount">500 bps</span></div>
+    </div>
+  </section>
+
+  <!-- CONTRACTS TAB -->
+  <section class="tab-panel" id="panel-contracts" role="tabpanel" aria-label="Deployed contracts">
+    <div class="lookup-box">
+      <div class="stat-label" style="margin-bottom:16px">DEPLOYED CONTRACTS — BASE SEPOLIA</div>
+      <div class="contract-row"><div><span class="contract-name">ArcisVault</span><span class="contract-tag">raUSDC</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d" target="_blank">0xa8eF...E98d ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">AgentCredit</span><span class="contract-tag">ERC-8004</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC" target="_blank">0x0195...6FC ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x0281e7D37683c585325004F84e0b94170c78d5B4" target="_blank">0x0281...d5B4 ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x9f101e1159AA530dC5Cb104decB32aBA1eAF2617" target="_blank">0x9f10...2617 ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">MockStrategy</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x9d6FB397224141FD323096e95667d3Ae5D9FF9cC" target="_blank">0x9d6F...F9cC ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">MockUSDC</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x29440A12f15fe6bDf5F624f4eeEB298CCb782f05" target="_blank">0x2944...2f05 ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">MockIdentityRegistry</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://base-sepolia.blockscout.com/address/0x79E79629DB86CFb8feF9594621882b065EBC80A7" target="_blank">0x79E7...80A7 ↗</a></div>
+
+      <div class="ati-block">
+        <div class="label">ATI STANDARD</div>
+        <code>deposit(uint256 amount) → uint256 shares<br>withdraw(uint256 shares) → uint256 amount<br>balance(address agent) → uint256 value</code>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Arcis Protocol · MMXXVI</span>
+  <span>
+    <a href="https://arcis.money">arcis.money</a> ·
+    <a href="https://github.com/Arcis-Protocol" target="_blank">GitHub</a> ·
+    <a href="https://github.com/Arcis-Protocol/docs" target="_blank">Docs</a>
+  </span>
+</footer>
+
+<script>
+// ── Config ──
+const RPC = 'https://sepolia.base.org';
+const VAULT = '0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d';
+const CREDIT = '0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC';
+const USDC_ADDR = '0x29440A12f15fe6bDf5F624f4eeEB298CCb782f05';
+const DEPLOYER = '0xB390c9a4fB16389B6edd468f18AB2597bdf857db';
+
+// Function selectors (precomputed keccak256 first 4 bytes)
+const SEL = {
+  totalAssets:       '0x01e1d114',
+  totalSupply:       '0x18160ddd',
+  exchangeRate:      '0x3ba0b9a9',
+  remainingCapacity: '0xc65e2bfd',
+  depositCap:        '0x75b6a276',
+  reserveBalance:    '0x28d10147',
+  deployedBalance:   '0x7ad71f72',
+  paused:            '0x5c975abb',
+  balanceOf:         '0x70a08231',
+  balance:           '0xe3d670d7',
+  lendingPool:       '0xbc84b8e6',
+  totalBorrowed:     '0x4c19386c',
+  collateralRatios:  '0x3c6f0608',
+};
+
+function padAddr(a) { return a.slice(2).toLowerCase().padStart(64,'0'); }
+function padUint(n) { return BigInt(n).toString(16).padStart(64,'0'); }
+
+async function ethCall(to, data) {
+  const r = await fetch(RPC, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({jsonrpc:'2.0',method:'eth_call',params:[{to,data},'latest'],id:1})
+  });
+  return (await r.json()).result;
+}
+
+function decU(h) { return h && h !== '0x' ? BigInt(h) : 0n; }
+function fmtU(raw, d) { d = d ?? 2; var n = Number(raw)/1e6; return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtR(raw) { return (Number(raw)/1e18).toFixed(6); }
+
+// ── Fetch live data ──
+async function fetchAll() {
+  try {
+    var [ta,ts,rt,rc,dc,rb,db,pa] = await Promise.all([
+      ethCall(VAULT,SEL.totalAssets), ethCall(VAULT,SEL.totalSupply),
+      ethCall(VAULT,SEL.exchangeRate), ethCall(VAULT,SEL.remainingCapacity),
+      ethCall(VAULT,SEL.depositCap), ethCall(VAULT,SEL.reserveBalance),
+      ethCall(VAULT,SEL.deployedBalance), ethCall(VAULT,SEL.paused),
+    ]);
+
+    var totalAssets=decU(ta), totalSupply=decU(ts), rate=decU(rt),
+        remaining=decU(rc), cap=decU(dc), reserve=decU(rb),
+        deployed=decU(db), paused=decU(pa)!==0n;
+
+    var util = cap>0n ? Number(totalAssets*10000n/cap)/100 : 0;
+    var resPct = totalAssets>0n ? Number(reserve*10000n/totalAssets)/100 : 0;
+
+    document.getElementById('tvl').textContent = '$' + fmtU(totalAssets);
+    document.getElementById('rate').textContent = fmtR(rate);
+    document.getElementById('supply').textContent = fmtU(totalSupply, 0);
+    document.getElementById('capPct').textContent = util.toFixed(2) + '%';
+    document.getElementById('capFill').style.width = Math.min(util,100) + '%';
+    document.getElementById('capDeposited').textContent = '$' + fmtU(totalAssets) + ' deposited';
+    document.getElementById('capTotal').textContent = '$' + fmtU(cap) + ' cap';
+    document.getElementById('reserve').textContent = '$' + fmtU(reserve);
+    document.getElementById('reservePct').textContent = resPct.toFixed(1) + '% of TVL';
+    document.getElementById('deployed').textContent = '$' + fmtU(deployed);
+    document.getElementById('deployedPct').textContent = (100-resPct).toFixed(1) + '% of TVL';
+
+    var sb = document.getElementById('vaultStatus');
+    var st = document.getElementById('vaultStatusText');
+    if (paused) { sb.className='status-bar paused'; st.textContent='Vault Paused'; }
+    else { sb.className='status-bar active'; st.textContent='Vault Active — Accepting Deposits'; }
+
+    // Credit
+    var [lp,tb] = await Promise.all([
+      ethCall(CREDIT,SEL.lendingPool), ethCall(CREDIT,SEL.totalBorrowed)
+    ]);
+    var pool=decU(lp), borrowed=decU(tb);
+    var creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
+
+    document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
+    document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
+    document.getElementById('creditUtil').textContent = creditU.toFixed(1) + '%';
+
+    // Ratios
+    for (var i=0; i<5; i++) {
+      var rh = await ethCall(CREDIT, SEL.collateralRatios + padUint(i));
+      document.getElementById('ratio'+i).textContent = Number(decU(rh))/100 + '%';
+    }
+
+    // Update LLM markdown
+    var md = document.getElementById('llm-markdown').textContent;
+    md = md.replace(/TVL: \$.*/, 'TVL: $' + fmtU(totalAssets));
+    md = md.replace(/Exchange Rate: .*/, 'Exchange Rate: ' + fmtR(rate));
+    md = md.replace(/raUSDC Supply: .*/, 'raUSDC Supply: ' + fmtU(totalSupply,0));
+    md = md.replace(/Deposit Cap: .*/, 'Deposit Cap: $' + fmtU(cap));
+    md = md.replace(/Remaining Capacity: .*/, 'Remaining Capacity: $' + fmtU(remaining));
+    md = md.replace(/Reserve Balance: .*/, 'Reserve Balance: $' + fmtU(reserve));
+    md = md.replace(/Deployed Balance: .*/, 'Deployed Balance: $' + fmtU(deployed));
+    md = md.replace(/Vault Status: .*/, 'Vault Status: ' + (paused?'PAUSED':'ACTIVE'));
+    md = md.replace(/Lending Pool: .*/, 'Lending Pool: $' + fmtU(pool));
+    md = md.replace(/Total Borrowed: .*/, 'Total Borrowed: $' + fmtU(borrowed));
+    md = md.replace(/Credit Utilization: .*/, 'Credit Utilization: ' + creditU.toFixed(1) + '%');
+    document.getElementById('llm-markdown').textContent = md;
+
+    // Status indicator
+    document.getElementById('statusDot').className = 'status-dot';
+    document.getElementById('statusText').textContent = 'Updated ' + new Date().toLocaleTimeString();
+
+  } catch(e) {
+    console.error('Fetch error:', e);
+    document.getElementById('statusDot').className = 'status-dot loading';
+    document.getElementById('statusText').textContent = 'Error fetching data';
+  }
+}
+
+// ── Lookup ──
+async function lookupPosition() {
+  var addr = document.getElementById('lookupInput').value.trim();
+  if (!addr || !addr.startsWith('0x') || addr.length !== 42) return;
+
+  document.getElementById('lookupBtn').textContent = '...';
+  try {
+    var [sh,vl,ub] = await Promise.all([
+      ethCall(VAULT, SEL.balanceOf + padAddr(addr)),
+      ethCall(VAULT, SEL.balance + padAddr(addr)),
+      ethCall(USDC_ADDR, SEL.balanceOf + padAddr(addr)),
+    ]);
+    document.getElementById('lookupAddr').textContent = addr;
+    document.getElementById('resShares').textContent = fmtU(decU(sh), 0);
+    document.getElementById('resValue').textContent = '$' + fmtU(decU(vl));
+    document.getElementById('resUSDC').textContent = '$' + fmtU(decU(ub));
+    document.getElementById('lookupResult').style.display = 'block';
+  } catch(e) { console.error(e); }
+  document.getElementById('lookupBtn').textContent = 'QUERY';
+}
+
+// ── Tab switching ──
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    this.classList.add('active');
+    this.setAttribute('aria-selected','true');
+    document.getElementById('panel-' + this.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Event listeners ──
+document.getElementById('lookupBtn').addEventListener('click', lookupPosition);
+document.getElementById('lookupInput').addEventListener('keydown', function(e) { if (e.key==='Enter') lookupPosition(); });
+document.getElementById('tryDeployer').addEventListener('click', function() {
+  document.getElementById('lookupInput').value = DEPLOYER;
+  lookupPosition();
+});
+
+// ── Init ──
+fetchAll();
+setInterval(fetchAll, 15000);
+</script>
+</body>
+</html>
