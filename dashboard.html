@@ -95,7 +95,7 @@ a:hover { color: var(--ivory); }
 .tab:hover { color: var(--ivory); }
 
 /* Content */
-.content { padding: 24px; max-width: 920px; margin: 0 auto; }
+.content { padding: 24px; max-width: 920px; margin: 0 auto; padding-bottom: 60px; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
@@ -183,9 +183,20 @@ a:hover { color: var(--ivory); }
 
 /* Footer */
 .footer {
-  border-top: 1px solid var(--border); padding: 16px 24px;
-  display: flex; justify-content: space-between; font-size: 11px;
-  color: var(--ivory-muted); margin-top: 40px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--ivory-muted);
+  background: var(--bg);
+  z-index: 100;
+  height: 38px;
 }
 
 /* LLM-readable hidden data block */
@@ -197,7 +208,7 @@ a:hover { color: var(--ivory); }
   .stat-card { min-width: auto; }
   .result-grid { grid-template-columns: 1fr; gap: 12px; }
   .header { flex-direction: column; gap: 8px; align-items: flex-start; }
-  .footer { flex-direction: column; gap: 8px; }
+  .footer { flex-direction: row; gap: 0; padding: 8px 16px; height: 34px; font-size: 10px; }
   .tier-header, .tier-row { grid-template-columns: 32px 1fr 60px 60px; font-size: 12px; }
   .content { padding: 16px; }
 }
@@ -260,9 +271,15 @@ a:hover { color: var(--ivory); }
 <pre id="llm-markdown">
 # Arcis Protocol — Live Data
 
+## Agent Quick Start
+1. Fetch protocol config: GET https://arcis.money/protocol.json
+2. Use the ABI and addresses from that JSON to call deposit/withdraw/balance
+3. No SDK required — raw eth_call works. See examples below.
+
 ## Network
 - Chain: Base Sepolia (Chain ID: 84532)
 - RPC: https://sepolia.base.org
+- Protocol Config: https://arcis.money/protocol.json
 
 ## Contracts
 - ArcisVault (raUSDC): 0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d
@@ -271,11 +288,32 @@ a:hover { color: var(--ivory); }
 - USDC (Mock): 0x29440A12f15fe6bDf5F624f4eeEB298CCb782f05
 
 ## ATI Standard (Agent Treasury Interface)
-- deposit(uint256 amount) → uint256 shares
-- withdraw(uint256 shares) → uint256 amount
-- balance(address agent) → uint256 value
+- deposit(uint256 amount) → uint256 shares [selector: 0xb6b55f25]
+- withdraw(uint256 shares) → uint256 amount [selector: 0x2e1a7d4d]
+- balance(address agent) → uint256 value [selector: 0xe3d670d7]
 
-## Live Metrics (auto-updated)
+## How Agents Use Arcis (3 steps)
+Step 1: Approve USDC spending
+  → Call approve(vaultAddress, maxUint256) on USDC contract
+  → Selector: 0x095ea7b3
+  → Only needed once per agent
+
+Step 2: Deposit USDC
+  → Call deposit(amount) on ArcisVault
+  → amount is in 6 decimals (1000 USDC = 1000000000)
+  → Returns raUSDC shares
+
+Step 3: Check position
+  → Call balance(agentAddress) on ArcisVault
+  → Returns USDC value including accrued yield
+
+To withdraw: call withdraw(shares) on ArcisVault
+
+## Example eth_call (check balance)
+POST https://sepolia.base.org
+{"jsonrpc":"2.0","method":"eth_call","params":[{"to":"0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d","data":"0xe3d670d7000000000000000000000000YOUR_ADDRESS_PADDED_TO_32_BYTES"},"latest"],"id":1}
+
+## Live Metrics (auto-updated every 15s)
 - TVL: $LOADING
 - Exchange Rate: LOADING
 - raUSDC Supply: LOADING
@@ -297,11 +335,22 @@ a:hover { color: var(--ivory); }
 | 3 | 51-75 | 130% | 350 bps |
 | 4 | 76-100 | 115% | 500 bps |
 
+## Revenue Model
+- Management fee: 2% (200 bps) on vault yield harvested
+- Origination fee: on bond purchases via RevenueBondFactory
+- Interest spread: on AgentCredit borrowing (per-block accrual)
+
+## Supported Agent Frameworks
+TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any viem/ethers/web3.py agent
+
 ## Links
 - Website: https://arcis.money
+- Dashboard: https://arcis.money/dashboard
+- Protocol Config: https://arcis.money/protocol.json
 - GitHub: https://github.com/Arcis-Protocol
-- Docs: https://github.com/Arcis-Protocol/docs
 - SDK: https://github.com/Arcis-Protocol/sdk
+- Docs: https://github.com/Arcis-Protocol/docs
+- Integration Guide: https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md
 </pre>
 </section>
 
@@ -637,20 +686,33 @@ fetchAll();
 setInterval(fetchAll, 15000);
 fetchEvents();
 
-// ── Wallet Connect ──
+// ── Wallet Connect (EIP-6963 + legacy injected) ──
 var connectedAccount = null;
 var walletProvider = null;
+var discoveredProviders = [];
+
+// EIP-6963: Listen for announced wallet providers
+window.addEventListener('eip6963:announceProvider', function(event) {
+  discoveredProviders.push(event.detail);
+});
+// Request providers
+window.dispatchEvent(new Event('eip6963:requestProvider'));
 
 async function connectWallet() {
   if (connectedAccount) { disconnectWallet(); return; }
 
-  if (typeof window.ethereum === 'undefined') {
-    alert('No wallet detected. Install MetaMask, Coinbase Wallet, or any EVM wallet.');
+  // Use first EIP-6963 provider, or fall back to window.ethereum
+  var provider = discoveredProviders.length > 0
+    ? discoveredProviders[0].provider
+    : window.ethereum;
+
+  if (!provider) {
+    alert('No wallet detected. Install MetaMask, Coinbase Wallet, Rabby, or any EVM wallet.');
     return;
   }
 
   try {
-    walletProvider = window.ethereum;
+    walletProvider = provider;
     var accounts = await walletProvider.request({ method: 'eth_requestAccounts' });
     connectedAccount = accounts[0];
 

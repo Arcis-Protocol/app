@@ -1,0 +1,124 @@
+{
+  "protocol": "arcis",
+  "version": "0.1.0",
+  "name": "Arcis Protocol",
+  "description": "Financial infrastructure for autonomous AI agents. Yield-bearing vaults, identity-aware credit, and revenue bonds.",
+  "website": "https://arcis.money",
+  "docs": "https://github.com/Arcis-Protocol/docs",
+  "dashboard": "https://arcis.money/dashboard",
+
+  "networks": {
+    "base-sepolia": {
+      "chainId": 84532,
+      "rpc": "https://sepolia.base.org",
+      "explorer": "https://base-sepolia.blockscout.com",
+      "status": "live",
+      "contracts": {
+        "vault": {
+          "address": "0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d",
+          "name": "ArcisVault",
+          "token": "raUSDC"
+        },
+        "credit": {
+          "address": "0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC",
+          "name": "AgentCredit"
+        },
+        "router": {
+          "address": "0x0281e7D37683c585325004F84e0b94170c78d5B4",
+          "name": "ATIRouter"
+        },
+        "usdc": {
+          "address": "0x29440A12f15fe6bDf5F624f4eeEB298CCb782f05",
+          "name": "MockUSDC",
+          "decimals": 6
+        }
+      }
+    },
+    "base": {
+      "chainId": 8453,
+      "rpc": "https://mainnet.base.org",
+      "explorer": "https://basescan.org",
+      "status": "pending",
+      "contracts": {}
+    }
+  },
+
+  "ati": {
+    "name": "Agent Treasury Interface",
+    "version": "1.0",
+    "description": "Three functions. One interface. Any agent framework.",
+    "functions": {
+      "deposit": {
+        "signature": "deposit(uint256 amount) returns (uint256 shares)",
+        "selector": "0xb6b55f25",
+        "description": "Deposit USDC into the vault. Returns raUSDC shares.",
+        "params": { "amount": "USDC amount in 6 decimals (e.g. 1000000000 = 1000 USDC)" },
+        "returns": { "shares": "raUSDC shares minted" },
+        "requires": "Caller must approve vault to spend USDC first"
+      },
+      "withdraw": {
+        "signature": "withdraw(uint256 shares) returns (uint256 amount)",
+        "selector": "0x2e1a7d4d",
+        "description": "Withdraw USDC by redeeming raUSDC shares.",
+        "params": { "shares": "raUSDC shares to redeem" },
+        "returns": { "amount": "USDC returned including yield" }
+      },
+      "balance": {
+        "signature": "balance(address agent) view returns (uint256)",
+        "selector": "0xe3d670d7",
+        "description": "Query current USDC value of an agent's position.",
+        "params": { "agent": "Address of the agent or wallet" },
+        "returns": { "value": "USDC value in 6 decimals" }
+      }
+    }
+  },
+
+  "abi": {
+    "vault": [
+      { "name": "deposit", "type": "function", "inputs": [{"name": "amount", "type": "uint256"}], "outputs": [{"name": "shares", "type": "uint256"}], "stateMutability": "nonpayable" },
+      { "name": "withdraw", "type": "function", "inputs": [{"name": "shares", "type": "uint256"}], "outputs": [{"name": "amount", "type": "uint256"}], "stateMutability": "nonpayable" },
+      { "name": "balance", "type": "function", "inputs": [{"name": "agent", "type": "address"}], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "totalAssets", "type": "function", "inputs": [], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "exchangeRate", "type": "function", "inputs": [], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "previewDeposit", "type": "function", "inputs": [{"name": "assets", "type": "uint256"}], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "previewWithdraw", "type": "function", "inputs": [{"name": "shares", "type": "uint256"}], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "balanceOf", "type": "function", "inputs": [{"name": "account", "type": "address"}], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "totalSupply", "type": "function", "inputs": [], "outputs": [{"type": "uint256"}], "stateMutability": "view" },
+      { "name": "approve", "type": "function", "inputs": [{"name": "spender", "type": "address"}, {"name": "amount", "type": "uint256"}], "outputs": [{"type": "bool"}], "stateMutability": "nonpayable" }
+    ],
+    "usdc": [
+      { "name": "approve", "type": "function", "inputs": [{"name": "spender", "type": "address"}, {"name": "amount", "type": "uint256"}], "outputs": [{"type": "bool"}], "stateMutability": "nonpayable" },
+      { "name": "balanceOf", "type": "function", "inputs": [{"name": "account", "type": "address"}], "outputs": [{"type": "uint256"}], "stateMutability": "view" }
+    ]
+  },
+
+  "quickstart": {
+    "steps": [
+      "1. Fetch this file: GET https://arcis.money/protocol.json",
+      "2. Get vault address from networks.base-sepolia.contracts.vault.address",
+      "3. Approve USDC: call approve(vaultAddress, amount) on the USDC contract",
+      "4. Deposit: call deposit(amount) on the vault contract",
+      "5. Check balance: call balance(yourAddress) on the vault contract",
+      "6. Withdraw: call withdraw(shares) on the vault contract"
+    ],
+    "example_rpc_call": {
+      "method": "eth_call",
+      "params": {
+        "to": "0xa8eF658E125C7f6D7aFa9B6b8035b66b32CBE98d",
+        "data": "0xe3d670d7000000000000000000000000YOUR_ADDRESS_HERE"
+      },
+      "description": "Call balance(address) to check your position value"
+    }
+  },
+
+  "sdk": {
+    "npm": "@arcis/sdk",
+    "github": "https://github.com/Arcis-Protocol/sdk",
+    "install": "npm install @arcis/sdk viem"
+  },
+
+  "integrations": {
+    "supported": ["viem", "ethers.js", "web3.py", "TWAK", "Coinbase Agentic Wallets", "elizaOS", "LangChain", "CrewAI"],
+    "guide": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+  }
+}
