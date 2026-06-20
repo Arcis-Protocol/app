@@ -85,17 +85,34 @@ a:hover { color: var(--ivory); }
 /* Header */
 .header {
   border-bottom: 1px solid var(--border);
-  padding: 16px 24px;
+  padding: 14px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
-.header-logo { font-family: var(--font-display); font-size: 20px; font-weight: 500; letter-spacing: 0.1em; color: var(--ivory); }
-.header-badge { font-size: 9px; color: var(--gold); border: 1px solid var(--gold); border-radius: 3px; padding: 2px 6px; letter-spacing: 0.1em; margin-left: 10px; }
-.header-status { display: flex; align-items: center; gap: 8px; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-left a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.header-left img { height: 24px; width: auto; }
+.header-logo { font-family: var(--font-display); font-size: 18px; font-weight: 500; letter-spacing: 0.1em; color: var(--ivory); }
+.header-badge { font-size: 8px; color: var(--gold); border: 1px solid rgba(212,175,105,0.4); border-radius: 3px; padding: 2px 5px; letter-spacing: 0.08em; white-space: nowrap; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 .status-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
-.status-text { font-size: 11px; color: var(--ivory-muted); }
+.status-text { font-size: 10px; color: var(--ivory-muted); white-space: nowrap; display: none; }
 
 /* Tabs */
 .tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; }
@@ -217,14 +234,29 @@ a:hover { color: var(--ivory); }
 .llm-data { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 /* Responsive */
+@media (min-width: 641px) {
+  .status-text { display: inline; }
+  .header { padding: 16px 24px; }
+  .header-left img { height: 28px; }
+  .header-logo { font-size: 20px; }
+}
 @media (max-width: 640px) {
   .stats-row { flex-direction: column; }
-  .stat-card { min-width: auto; }
+  .stat-card { min-width: auto; padding: 16px 20px; }
+  .stat-value { font-size: 24px; }
   .result-grid { grid-template-columns: 1fr; gap: 12px; }
-  .header { flex-direction: column; gap: 8px; align-items: flex-start; }
   .footer { flex-direction: row; gap: 0; padding: 8px 16px; height: 34px; font-size: 10px; }
   .tier-header, .tier-row { grid-template-columns: 32px 1fr 60px 60px; font-size: 12px; }
-  .content { padding: 16px; }
+  .content { padding: 16px; padding-bottom: 50px; }
+  .capacity-box { padding: 16px; }
+  .lookup-box { padding: 16px; }
+  .lookup-row { flex-direction: column; }
+  .lookup-btn { width: 100%; }
+  .wallet-btn { padding: 6px 12px; font-size: 10px; }
+  .tab { padding: 12px 14px; font-size: 12px; }
+  .actions-box { padding: 16px; }
+  .events-box { padding: 16px; }
+  .contract-row { flex-direction: column; gap: 6px; align-items: flex-start; }
 }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -370,17 +402,17 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
 
 <!-- Header -->
 <header class="header" role="banner">
-  <div>
-    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
-      <img src="logo-nav.png" alt="Arcis" style="height:28px;width:auto">
+  <div class="header-left">
+    <a href="/">
+      <img src="logo-nav.png" alt="Arcis">
       <span class="header-logo">ARCIS</span>
     </a>
     <span class="header-badge">BASE SEPOLIA</span>
   </div>
-  <div class="header-status">
-    <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+  <div class="header-right">
     <div class="status-dot loading" id="statusDot"></div>
     <span class="status-text" id="statusText">Loading...</span>
+    <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
   </div>
 </header>
 
@@ -577,7 +609,11 @@ async function ethCall(to, data) {
 
 function decU(h) { return h && h !== '0x' ? BigInt(h) : 0n; }
 function fmtU(raw, d) { d = d ?? 2; var n = Number(raw)/1e6; return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
-function fmtR(raw) { return (Number(raw)/1e18).toFixed(6); }
+function fmtR(raw) {
+  var n = Number(raw)/1e18;
+  if (n > 1000 || n < 0.0001) return '1.000000'; // edge case: 0 supply
+  return n.toFixed(6);
+}
 
 // ── Fetch live data ──
 async function fetchAll() {
@@ -593,16 +629,16 @@ async function fetchAll() {
         remaining=decU(rc), cap=decU(dc), reserve=decU(rb),
         deployed=decU(db), paused=decU(pa)!==0n;
 
-    var util = cap>0n ? Number(totalAssets*10000n/cap)/100 : 0;
+    var util = cap>0n ? Number(totalAssets*10000n/cap)/100 : (totalAssets>0n ? 0.01 : 0);
     var resPct = totalAssets>0n ? Number(reserve*10000n/totalAssets)/100 : 0;
 
     document.getElementById('tvl').textContent = '$' + fmtU(totalAssets);
-    document.getElementById('rate').textContent = fmtR(rate);
+    document.getElementById('rate').textContent = totalSupply > 0n ? fmtR(rate) : '1.000000';
     document.getElementById('supply').textContent = fmtU(totalSupply, 0);
-    document.getElementById('capPct').textContent = util.toFixed(2) + '%';
-    document.getElementById('capFill').style.width = Math.min(util,100) + '%';
+    document.getElementById('capPct').textContent = cap > 0n ? util.toFixed(2) + '%' : '—';
+    document.getElementById('capFill').style.width = cap > 0n ? Math.min(util,100) + '%' : '0%';
     document.getElementById('capDeposited').textContent = '$' + fmtU(totalAssets) + ' deposited';
-    document.getElementById('capTotal').textContent = '$' + fmtU(cap) + ' cap';
+    document.getElementById('capTotal').textContent = cap > 0n ? '$' + fmtU(cap) + ' cap' : 'No cap set';
     document.getElementById('reserve').textContent = '$' + fmtU(reserve);
     document.getElementById('reservePct').textContent = resPct.toFixed(1) + '% of TVL';
     document.getElementById('deployed').textContent = '$' + fmtU(deployed);
