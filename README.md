@@ -70,9 +70,11 @@ vercel --prod
 | Repo | Description |
 |---|---|
 | [`core`](https://github.com/Arcis-Protocol/core) | Smart contracts (Foundry) |
-| [`sdk`](https://github.com/Arcis-Protocol/sdk) | TypeScript SDK (`@arcis/sdk`) |
+| [`sdk`](https://github.com/Arcis-Protocol/sdk) | TypeScript SDK (`@arcisprotocol/sdk`) |
 | [`cli`](https://github.com/Arcis-Protocol/cli) | Terminal interface (TUI) |
 | [`docs`](https://github.com/Arcis-Protocol/docs) | Protocol documentation |
+| [`mcp`](https://github.com/Arcis-Protocol/mcp) | MCP Server — connect AI agents |
+| [`monitor`](https://github.com/Arcis-Protocol/monitor) | On-chain monitoring + alerts |
 
 ---
 
