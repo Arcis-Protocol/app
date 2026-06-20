@@ -430,6 +430,7 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
 <nav class="tabs" role="tablist" aria-label="Dashboard sections">
   <button class="tab active" role="tab" aria-selected="true" data-tab="vault">Vault</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="credit">Credit</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="bonds">Bonds</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="contracts">Contracts</button>
 </nav>
 
@@ -547,6 +548,54 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
       <div class="tier-row"><span class="tier-num">II</span><span class="tier-label">Active (26-50)</span><span class="tier-ratio" id="ratio2">—</span><span class="tier-discount">200 bps</span></div>
       <div class="tier-row"><span class="tier-num">III</span><span class="tier-label">Established (51-75)</span><span class="tier-ratio" id="ratio3">—</span><span class="tier-discount">350 bps</span></div>
       <div class="tier-row"><span class="tier-num">IV</span><span class="tier-label">Elite (76-100)</span><span class="tier-ratio" id="ratio4">—</span><span class="tier-discount">500 bps</span></div>
+    </div>
+  </section>
+
+  <!-- CONTRACTS TAB -->
+
+  <!-- BONDS TAB -->
+  <section class="tab-panel" id="panel-bonds" role="tabpanel" aria-label="Revenue bonds">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">BONDS ISSUED</div>
+        <div class="stat-value" id="bond-count">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">TOTAL PRINCIPAL</div>
+        <div class="stat-value" id="bond-principal">$0.00</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">TOTAL ESCROW</div>
+        <div class="stat-value" id="bond-escrow">$0.00</div>
+      </div>
+    </div>
+
+    <div class="lookup-box" style="margin-top:20px">
+      <div class="stat-label" style="margin-bottom:16px">HOW REVENUE BONDS WORK</div>
+      <div style="color:var(--ivory-muted);font-size:13px;line-height:1.7">
+        <p style="margin-bottom:12px">Agents with proven revenue streams issue tokenized bonds. Human investors purchase yield-bearing claims. Smart contracts service debt automatically before agent profits.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+          <div>
+            <div style="color:var(--gold);font-size:11px;letter-spacing:0.08em;margin-bottom:6px">FOR AGENTS</div>
+            <p style="font-size:12px">Issue bonds to raise capital. Set your coupon rate, principal, and duration. Revenue escrow services debt automatically.</p>
+          </div>
+          <div>
+            <div style="color:var(--gold);font-size:11px;letter-spacing:0.08em;margin-bottom:6px">FOR INVESTORS</div>
+            <p style="font-size:12px">Purchase bond tokens for yield. Claim coupon payments pro-rata. Redeem principal at maturity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lookup-box" style="margin-top:20px">
+      <div class="stat-label" style="margin-bottom:12px">CUSTOS KEEPER</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <div class="status-dot" id="custos-dot" style="background:var(--gold)"></div>
+        <span style="color:var(--ivory);font-size:13px">Autonomous protocol keeper</span>
+      </div>
+      <div style="color:var(--ivory-muted);font-size:12px;line-height:1.7">
+        CUSTOS monitors bond health, calls <code style="color:var(--gold);font-size:11px">serviceDebt()</code> when escrow has revenue, deposits principal near maturity, and alerts on bonds at risk of default. It also harvests vault yield, monitors credit positions, and maintains protocol health autonomously.
+      </div>
     </div>
   </section>
 
