@@ -75,6 +75,7 @@ vercel --prod
 | [`docs`](https://github.com/Arcis-Protocol/docs) | Protocol documentation |
 | [`mcp`](https://github.com/Arcis-Protocol/mcp) | MCP Server — connect AI agents |
 | [`monitor`](https://github.com/Arcis-Protocol/monitor) | On-chain monitoring + alerts |
+| [`custos`](https://github.com/Arcis-Protocol/custos) | CUSTOS — autonomous keeper agent |
 
 ---
 
