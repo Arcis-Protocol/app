@@ -12,7 +12,7 @@ Landing page and dashboard for Arcis Protocol.
 
 ## Dashboard
 
-4 tabs with live on-chain data from Base Sepolia:
+4 tabs with live on-chain data from Base Mainnet:
 
 | Tab | Content |
 |---|---|
