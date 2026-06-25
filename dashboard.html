@@ -339,9 +339,9 @@ a:hover { color: var(--ivory); }
 
 ## Contracts
 - ArcisVault (raUSDC): 0x00325d9da832b38179ed2f0dabd4062d93e325a7
-- AgentCredit: 0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC
+- StrategyAave: 0x43626D6162Ccb12328B989BB228DaD2941F2F12a
 - ATIRouter: 0xeC3b7Daa942C03651D55A4A01797498fA6dB728F
-- USDC (Mock): 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+- USDC: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 
 ## ATI Standard (Agent Treasury Interface)
 - deposit(uint256 amount) → uint256 shares [selector: 0xb6b55f25]
@@ -417,7 +417,7 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
       <img src="logo-nav.png" alt="Arcis">
       <span class="header-logo">ARCIS</span>
     </a>
-    <span class="header-badge">BASE SEPOLIA</span>
+    <span class="header-badge">BASE</span>
   </div>
   <div class="header-right">
     <div class="status-dot loading" id="statusDot"></div>
@@ -602,14 +602,12 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
   <!-- CONTRACTS TAB -->
   <section class="tab-panel" id="panel-contracts" role="tabpanel" aria-label="Deployed contracts">
     <div class="lookup-box">
-      <div class="stat-label" style="margin-bottom:16px">DEPLOYED CONTRACTS — BASE SEPOLIA</div>
-      <div class="contract-row"><div><span class="contract-name">ArcisVault</span><span class="contract-tag">raUSDC</span></div><a class="contract-addr" href="https://basescan.org/address/0x00325d9da832b38179ed2f0dabd4062d93e325a7" target="_blank">0xa8eF...E98d ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">AgentCredit</span><span class="contract-tag">ERC-8004</span></div><a class="contract-addr" href="https://basescan.org/address/0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC" target="_blank">0x0195...6FC ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://basescan.org/address/0xeC3b7Daa942C03651D55A4A01797498fA6dB728F" target="_blank">0x0281...d5B4 ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span></div><a class="contract-addr" href="https://basescan.org/address/0x7Fd5d7b49694858FCf143E0039e83cDB0196DD7A" target="_blank">0x9f10...2617 ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">MockStrategy</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://basescan.org/address/0x43626D6162Ccb12328B989BB228DaD2941F2F12a" target="_blank">0x9d6F...F9cC ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">MockUSDC</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" target="_blank">0x2944...2f05 ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">MockIdentityRegistry</span><span class="contract-tag">TESTNET</span></div><a class="contract-addr" href="https://basescan.org/address/0x79E79629DB86CFb8feF9594621882b065EBC80A7" target="_blank">0x79E7...80A7 ↗</a></div>
+      <div class="stat-label" style="margin-bottom:16px">DEPLOYED CONTRACTS — BASE MAINNET</div>
+      <div class="contract-row"><div><span class="contract-name">ArcisVault</span><span class="contract-tag">raUSDC</span></div><a class="contract-addr" href="https://basescan.org/address/0x00325d9da832b38179ed2f0dabd4062d93e325a7" target="_blank">0x0032...25a7 ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://basescan.org/address/0xeC3b7Daa942C03651D55A4A01797498fA6dB728F" target="_blank">0xeC3b...728F ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">StrategyAave</span><span class="contract-tag">YIELD</span></div><a class="contract-addr" href="https://basescan.org/address/0x43626D6162Ccb12328B989BB228DaD2941F2F12a" target="_blank">0x4362...F12a ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span><span class="contract-tag">TIMELOCK</span></div><a class="contract-addr" href="https://basescan.org/address/0x7Fd5d7b49694858FCf143E0039e83cDB0196DD7A" target="_blank">0x7Fd5...D7A ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">USDC</span><span class="contract-tag">BASE</span></div><a class="contract-addr" href="https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" target="_blank">0x8335...0913 ↗</a></div>
 
       <div class="ati-block">
         <div class="label">ATI STANDARD</div>
@@ -644,7 +642,7 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
 // ── Config ──
 const RPC = 'https://mainnet.base.org';
 const VAULT = '0x00325d9da832b38179ed2f0dabd4062d93e325a7';
-const CREDIT = '0x019540E33a0292a9DDE36bD9Ef11774d5A1Ce6FC';
+const CREDIT = ''; // Phase 2 — not deployed to mainnet yet
 const USDC_ADDR = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const DEPLOYER = '0xB390c9a4fB16389B6edd468f18AB2597bdf857db';
 
@@ -841,14 +839,14 @@ async function connectWallet() {
     try {
       await walletProvider.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x14a34' }], // 8453
+        params: [{ chainId: '0x2105' }], // 8453
       });
     } catch(e) {
       if (e.code === 4902) {
         await walletProvider.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0x14a34',
+            chainId: '0x2105',
             chainName: 'Base',
             rpcUrls: ['https://mainnet.base.org'],
             nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
