@@ -681,6 +681,32 @@ async function ethCall(to, data) {
   return (await r.json()).result;
 }
 
+// Batch JSON-RPC — send all calls in one HTTP request
+async function batchCall(calls) {
+  var batch = calls.map(function(c, i) {
+    return {jsonrpc:'2.0',method:'eth_call',params:[{to:c.to,data:c.data},'latest'],id:i+1};
+  });
+  try {
+    var r = await fetch(RPC, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(batch)
+    });
+    var results = await r.json();
+    if (Array.isArray(results)) {
+      results.sort(function(a,b){return a.id-b.id;});
+      return results.map(function(r){return r.result || '0x';});
+    }
+  } catch(e) {}
+  // Fallback: sequential with delay
+  var out = [];
+  for (var i = 0; i < calls.length; i++) {
+    try { out.push(await ethCall(calls[i].to, calls[i].data)); } catch(e) { out.push('0x'); }
+    if (i < calls.length - 1) await new Promise(function(r){setTimeout(r,150);});
+  }
+  return out;
+}
+
 function decU(h) { return h && h !== '0x' ? BigInt(h) : 0n; }
 function fmtU(raw, d) { d = d ?? 2; var n = Number(raw)/1e6; return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 function fmtR(raw) {
@@ -692,11 +718,11 @@ function fmtR(raw) {
 // ── Fetch live data ──
 async function fetchAll() {
   try {
-    var [ta,ts,rt,rc,dc,rb,db,pa] = await Promise.all([
-      ethCall(VAULT,SEL.totalAssets), ethCall(VAULT,SEL.totalSupply),
-      ethCall(VAULT,SEL.exchangeRate), ethCall(VAULT,SEL.remainingCapacity),
-      ethCall(VAULT,SEL.depositCap), ethCall(VAULT,SEL.reserveBalance),
-      ethCall(VAULT,SEL.deployedBalance), ethCall(VAULT,SEL.paused),
+    var [ta,ts,rt,rc,dc,rb,db,pa] = await batchCall([
+      {to:VAULT,data:SEL.totalAssets}, {to:VAULT,data:SEL.totalSupply},
+      {to:VAULT,data:SEL.exchangeRate}, {to:VAULT,data:SEL.remainingCapacity},
+      {to:VAULT,data:SEL.depositCap}, {to:VAULT,data:SEL.reserveBalance},
+      {to:VAULT,data:SEL.deployedBalance}, {to:VAULT,data:SEL.paused},
     ]);
 
     var totalAssets=decU(ta), totalSupply=decU(ts), rate=decU(rt),
@@ -724,7 +750,7 @@ async function fetchAll() {
     else { sb.className='status-bar active'; st.textContent='Vault Active — Accepting Deposits'; }
 
     // Credit
-    var [lp,tb] = await Promise.all([
+    var [lp,tb] = await batchCall([
       ethCall(CREDIT,SEL.lendingPool), ethCall(CREDIT,SEL.totalBorrowed)
     ]);
     var pool=decU(lp), borrowed=decU(tb);
@@ -773,10 +799,10 @@ async function lookupPosition() {
 
   document.getElementById('lookupBtn').textContent = '...';
   try {
-    var [sh,vl,ub] = await Promise.all([
-      ethCall(VAULT, SEL.balanceOf + padAddr(addr)),
-      ethCall(VAULT, SEL.balance + padAddr(addr)),
-      ethCall(USDC_ADDR, SEL.balanceOf + padAddr(addr)),
+    var [sh,vl,ub] = await batchCall([
+      {to:VAULT, data:SEL.balanceOf + padAddr(addr)},
+      {to:VAULT, data:SEL.balance + padAddr(addr)},
+      {to:USDC_ADDR, data:SEL.balanceOf + padAddr(addr)},
     ]);
     document.getElementById('lookupAddr').textContent = addr;
     document.getElementById('resShares').textContent = Number(decU(sh)).toLocaleString();
