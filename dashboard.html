@@ -779,7 +779,7 @@ async function lookupPosition() {
       ethCall(USDC_ADDR, SEL.balanceOf + padAddr(addr)),
     ]);
     document.getElementById('lookupAddr').textContent = addr;
-    document.getElementById('resShares').textContent = fmtU(decU(sh), 0);
+    document.getElementById('resShares').textContent = Number(decU(sh)).toLocaleString();
     document.getElementById('resValue').textContent = '$' + fmtU(decU(vl));
     document.getElementById('resUSDC').textContent = '$' + fmtU(decU(ub));
     document.getElementById('lookupResult').style.display = 'block';
@@ -982,7 +982,7 @@ document.getElementById('depositAmount').addEventListener('input', async functio
     var sh = await ethCall(VAULT, SEL.totalAssets.slice(0,2) + 'ef8b30f7' + padUint(amount)); // previewDeposit
     // Actually use the right selector
     sh = await ethCall(VAULT, '0xef8b30f7' + padUint(amount));
-    document.getElementById('depositPreview').textContent = 'You will receive ' + Number(sh).toLocaleString() + ' raUSDC shares (~$' + parseFloat(val).toFixed(2) + ' value)';
+    document.getElementById('depositPreview').textContent = 'You will receive ' + Number(decU(sh)).toLocaleString() + ' raUSDC shares (~$' + parseFloat(val).toFixed(2) + ' value)';
   } catch(e) {}
 });
 
