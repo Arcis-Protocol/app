@@ -982,7 +982,7 @@ document.getElementById('depositAmount').addEventListener('input', async functio
     var sh = await ethCall(VAULT, SEL.totalAssets.slice(0,2) + 'ef8b30f7' + padUint(amount)); // previewDeposit
     // Actually use the right selector
     sh = await ethCall(VAULT, '0xef8b30f7' + padUint(amount));
-    document.getElementById('depositPreview').textContent = 'You will receive ~' + fmtU(decU(sh),2) + ' raUSDC shares';
+    document.getElementById('depositPreview').textContent = 'You will receive ' + Number(sh).toLocaleString() + ' raUSDC shares (~$' + parseFloat(val).toFixed(2) + ' value)';
   } catch(e) {}
 });
 
