@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service — Arcis Protocol</title>
+  <style>
+    :root { --bg: #08080A; --stone: #0F0F12; --gold: #D4AF69; --ivory: #E8E0D0; --muted: #8A8478; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--ivory); font-family:'Instrument Sans',system-ui,sans-serif; font-size:15px; line-height:1.8; }
+    .container { max-width:720px; margin:0 auto; padding:80px 24px; }
+    h1 { font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:300; margin-bottom:8px; }
+    .date { color:var(--muted); font-size:13px; margin-bottom:48px; }
+    h2 { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; margin:40px 0 12px; color:var(--gold); }
+    p { margin-bottom:16px; color:var(--ivory); opacity:0.85; }
+    a { color:var(--gold); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .back { display:inline-block; margin-bottom:32px; color:var(--muted); font-size:13px; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+  <a href="/" class="back">← arcis.money</a>
+  <h1>Terms of Service</h1>
+  <p class="date">Effective: June 28, 2026</p>
+
+  <h2>1. Acceptance</h2>
+  <p>By accessing or using Arcis Protocol ("Arcis"), including the arcis.money website, dashboard, smart contracts, SDK, MCP server, CUSTOS bot, or any related services, you agree to these Terms of Service. If you do not agree, do not use the protocol.</p>
+
+  <h2>2. Protocol Description</h2>
+  <p>Arcis is a set of open-source smart contracts deployed on the Base blockchain (Layer 2, Ethereum) that provide yield-bearing vaults, identity-aware credit lines, and revenue bonds primarily designed for use by autonomous AI agents. The protocol is non-custodial — users maintain control of their assets at all times through their own wallets.</p>
+
+  <h2>3. No Custodial Relationship</h2>
+  <p>Arcis does not custody, control, or hold your assets. When you deposit USDC into the ArcisVault, you receive raUSDC shares representing your proportional claim on vault assets. You can withdraw at any time by redeeming your shares. Smart contract logic governs all deposits, withdrawals, and yield distribution — not Arcis or its contributors.</p>
+
+  <h2>4. Risks</h2>
+  <p><strong>Smart Contract Risk:</strong> Despite rigorous testing (116 tests, security hardening, emergency withdrawal mechanisms), smart contracts may contain undiscovered vulnerabilities. The protocol has not yet undergone a formal third-party security audit.</p>
+  <p><strong>Blockchain Risk:</strong> Transactions on Base are irreversible. Network congestion, validator issues, or protocol upgrades to Base or Ethereum may affect the availability or cost of using Arcis.</p>
+  <p><strong>Strategy Risk:</strong> Vault capital is deployed to third-party yield strategies (e.g., Aave V3). These strategies carry their own risks including smart contract vulnerabilities, liquidity issues, and market conditions.</p>
+  <p><strong>Market Risk:</strong> The value of digital assets can fluctuate. USDC is a stablecoin but is subject to its issuer's (Circle) ability to maintain its peg.</p>
+  <p><strong>Regulatory Risk:</strong> The regulatory environment for DeFi and digital assets is evolving. Future regulations may affect your ability to use or access the protocol.</p>
+  <p><strong>raUSDC Display:</strong> Due to inflation protection mechanisms (virtual share offset), raUSDC shares may display as a small number in wallet interfaces. The dollar value of your position is always accurately reported by the vault's balance() function and the Arcis dashboard.</p>
+
+  <h2>5. No Financial Advice</h2>
+  <p>Nothing provided by Arcis, its website, documentation, social media accounts, CUSTOS bot, or contributors constitutes financial, investment, tax, or legal advice. You are solely responsible for evaluating the risks and merits of using the protocol. Consult qualified professionals before making financial decisions.</p>
+
+  <h2>6. No Guarantees of Returns</h2>
+  <p>Arcis does not guarantee any specific yield, return, or performance. Vault yields depend on third-party strategy performance and market conditions. Past performance does not indicate future results. Deposit caps and per-agent caps may limit the amount you can deposit.</p>
+
+  <h2>7. Eligibility</h2>
+  <p>You represent that you are legally permitted to use DeFi protocols in your jurisdiction. You are responsible for complying with all applicable laws and regulations. Arcis does not restrict access by geography but makes no representations about the legality of the protocol in any jurisdiction.</p>
+
+  <h2>8. Open Source</h2>
+  <p>Arcis smart contracts and related software are open source under the MIT License. The code is provided "as is" without warranty of any kind, express or implied. See the full license at <a href="https://github.com/Arcis-Protocol/core">github.com/Arcis-Protocol/core</a>.</p>
+
+  <h2>9. CUSTOS Automated Agent</h2>
+  <p>CUSTOS is an autonomous keeper agent that performs protocol maintenance operations (yield harvesting, loan monitoring, bond servicing) and posts status updates. CUSTOS operates based on pre-programmed logic and on-chain data. Its posts and actions do not constitute financial advice or recommendations.</p>
+
+  <h2>10. Limitation of Liability</h2>
+  <p>To the maximum extent permitted by law, Arcis Protocol, its contributors, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, revenue, data, or assets arising from your use of the protocol, regardless of the cause of action.</p>
+
+  <h2>11. Indemnification</h2>
+  <p>You agree to indemnify and hold harmless Arcis Protocol and its contributors from any claims, damages, or expenses arising from your use of the protocol or violation of these terms.</p>
+
+  <h2>12. Protocol Governance</h2>
+  <p>The protocol is currently managed by the deployer wallet. Contract ownership may be transferred to a multisig or DAO governance structure in the future. Emergency mechanisms (pause, emergency withdrawal) exist to protect depositors in the event of a security incident.</p>
+
+  <h2>13. Modifications</h2>
+  <p>We may update these terms. Continued use of the protocol after changes constitutes acceptance of the revised terms. Material changes will be communicated through the website and social channels.</p>
+
+  <h2>14. Severability</h2>
+  <p>If any provision of these terms is found to be unenforceable, the remaining provisions continue in full force and effect.</p>
+
+  <h2>15. Contact</h2>
+  <p>Questions about these terms: <a href="https://x.com/ArcisProtocol">@ArcisProtocol</a> on X or via <a href="https://github.com/Arcis-Protocol">GitHub</a>.</p>
+</div>
+</body>
+</html>
