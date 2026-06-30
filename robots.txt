@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /.well-known/
 
 Sitemap: https://arcis.money/sitemap.xml
+
+# AI Agent Discovery
+# Arcis Protocol — Financial infrastructure for AI agents
+# ATI Standard: deposit(), withdraw(), balance()
+# MCP Server: https://mcp-production-8219.up.railway.app/mcp
+# npm: @arcisprotocol/sdk @arcisprotocol/mcp

@@ -607,9 +607,9 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
     <div class="lookup-box">
       <div class="stat-label" style="margin-bottom:16px">DEPLOYED CONTRACTS — BASE MAINNET</div>
       <div class="contract-row"><div><span class="contract-name">ArcisVault</span><span class="contract-tag">raUSDC</span></div><a class="contract-addr" href="https://basescan.org/address/0x00325d9da832b38179ed2f0dabd4062d93e325a7" target="_blank">0x0032...25a7 ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://basescan.org/address/0xd0c64f997ca9aa427f8834578bd7f0313f868e83" target="_blank">0xeC3b...728F ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://basescan.org/address/0xd0c64f997ca9aa427f8834578bd7f0313f868e83" target="_blank">0xd0c6...8e83 ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">StrategyAave</span><span class="contract-tag">YIELD</span></div><a class="contract-addr" href="https://basescan.org/address/0x43626D6162Ccb12328B989BB228DaD2941F2F12a" target="_blank">0x4362...F12a ↗</a></div>
-      <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span><span class="contract-tag">TIMELOCK</span></div><a class="contract-addr" href="https://basescan.org/address/0x7Fd5d7b49694858FCf143E0039e83cDB0196DD7A" target="_blank">0x7Fd5...D7A ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span><span class="contract-tag">TIMELOCK</span></div><a class="contract-addr" href="https://basescan.org/address/0x7Fd5d7b49694858FCf143E0039e83cDB0196DD7A" target="_blank">0x7Fd5...DD7A ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">AgentCredit</span><span class="contract-tag">ERC-8004</span></div><a class="contract-addr" href="https://basescan.org/address/0xdf31800e620f728297340d66acf5a306f07ce7a1" target="_blank">0xdf31...e7a1 ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">RevenueBondFactory</span><span class="contract-tag">BONDS</span></div><a class="contract-addr" href="https://basescan.org/address/0xeb65d8bb08e0ea4a6bb9162d53d1b444f99681ba" target="_blank">0xeb65...81ba ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">IdentityRegistry</span><span class="contract-tag">REPUTATION</span></div><a class="contract-addr" href="https://basescan.org/address/0xaa4da295dd368c0f10128654af76e3f002e20e71" target="_blank">0xaa4d...0e71 ↗</a></div>
@@ -771,22 +771,23 @@ async function fetchAll() {
     if (paused) { sb.className='status-bar paused'; st.textContent='Vault Paused'; }
     else { sb.className='status-bar active'; st.textContent='Vault Active — Accepting Deposits'; }
 
-    // Credit
-    var [lp,tb] = await batchCall([
-      ethCall(CREDIT,SEL.lendingPool), ethCall(CREDIT,SEL.totalBorrowed)
-    ]);
-    var pool=decU(lp), borrowed=decU(tb);
-    var creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
+    // Credit (separate try/catch so vault data still shows if credit fails)
+    try {
+      var [lp,tb] = await batchCall([
+        {to:CREDIT, data:SEL.lendingPool}, {to:CREDIT, data:SEL.totalBorrowed}
+      ]);
+      var pool=decU(lp), borrowed=decU(tb);
+      var creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
 
-    document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
-    document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
-    document.getElementById('creditUtil').textContent = creditU.toFixed(1) + '%';
+      document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
+      document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
+      document.getElementById('creditUtil').textContent = creditU.toFixed(1) + '%';
 
-    // Ratios
-    for (var i=0; i<5; i++) {
-      var rh = await ethCall(CREDIT, SEL.collateralRatios + padUint(i));
-      document.getElementById('ratio'+i).textContent = Number(decU(rh))/100 + '%';
-    }
+      for (var i=0; i<5; i++) {
+        var rh = await ethCall(CREDIT, SEL.collateralRatios + padUint(BigInt(i)));
+        document.getElementById('ratio'+i).textContent = Number(decU(rh))/100 + '%';
+      }
+    } catch(ce) { console.warn('Credit fetch:', ce.message); }
 
     // Update LLM markdown
     var md = document.getElementById('llm-markdown').textContent;
