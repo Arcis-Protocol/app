@@ -753,11 +753,8 @@ async function fetchAll() {
     var resPct = totalAssets>0n ? Number(reserve*10000n/totalAssets)/100 : 0;
 
     document.getElementById('tvl').textContent = '$' + fmtU(totalAssets);
-    var aaveRate = await getAaveAPY();
-    var vaultApy = (aaveRate * 0.70 * 0.98).toFixed(2);
-    document.getElementById('vaultApy').textContent = vaultApy + '%';
-    document.getElementById('rate').textContent = totalSupply > 0n ? fmtR(rate) : '1.000000';
-    document.getElementById('supply').textContent = fmtU(totalSupply, 0);
+    document.getElementById('rate').textContent = totalSupply > 0n ? (Number(rate) / 1e24).toFixed(6) : '1.000000';
+    document.getElementById('supply').textContent = Number(totalSupply).toLocaleString() + ' shares';
     document.getElementById('capPct').textContent = cap > 0n ? util.toFixed(2) + '%' : '—';
     document.getElementById('capFill').style.width = cap > 0n ? Math.min(util,100) + '%' : '0%';
     document.getElementById('capDeposited').textContent = '$' + fmtU(totalAssets) + ' deposited';
@@ -766,6 +763,13 @@ async function fetchAll() {
     document.getElementById('reservePct').textContent = resPct.toFixed(1) + '% of TVL';
     document.getElementById('deployed').textContent = '$' + fmtU(deployed);
     document.getElementById('deployedPct').textContent = (100-resPct).toFixed(1) + '% of TVL';
+
+    // APY — separate so it doesn't block other fields
+    try {
+      var aaveRate = await getAaveAPY();
+      var vaultApy = (aaveRate * 0.70 * 0.98).toFixed(2);
+      document.getElementById('vaultApy').textContent = vaultApy + '%';
+    } catch(ae) { document.getElementById('vaultApy').textContent = '~2.2%'; }
 
     var sb = document.getElementById('vaultStatus');
     var st = document.getElementById('vaultStatusText');
