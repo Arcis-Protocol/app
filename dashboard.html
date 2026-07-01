@@ -749,16 +749,14 @@ async function getAaveAPY() {
 
 async function fetchAll() {
   try {
-    var [ta,ts,rt,rc,dc,rb,db,pa] = await batchCall([
-      {to:VAULT,data:SEL.totalAssets}, {to:VAULT,data:SEL.totalSupply},
-      {to:VAULT,data:SEL.exchangeRate}, {to:VAULT,data:SEL.remainingCapacity},
-      {to:VAULT,data:SEL.depositCap}, {to:VAULT,data:SEL.reserveBalance},
-      {to:VAULT,data:SEL.deployedBalance}, {to:VAULT,data:SEL.paused},
-    ]);
+    // Single API call to MCP server (uses Alchemy, no rate limiting)
+    var apiData = await fetch('https://mcp-production-8219.up.railway.app/api/vault').then(r => r.json());
+    if (apiData.error) throw new Error(apiData.error);
 
-    var totalAssets=decU(ta), totalSupply=decU(ts), rate=decU(rt),
-        remaining=decU(rc), cap=decU(dc), reserve=decU(rb),
-        deployed=decU(db), paused=decU(pa)!==0n;
+    var totalAssets=BigInt(apiData.totalAssets), totalSupply=BigInt(apiData.totalSupply),
+        rate=BigInt(apiData.exchangeRate), remaining=BigInt(apiData.remainingCapacity),
+        cap=BigInt(apiData.depositCap), reserve=BigInt(apiData.reserveBalance),
+        deployed=BigInt(apiData.deployedBalance), paused=apiData.paused;
 
     var util = cap>0n ? Number(totalAssets*10000n/cap)/100 : (totalAssets>0n ? 0.01 : 0);
     var resPct = totalAssets>0n ? Number(reserve*10000n/totalAssets)/100 : 0;
@@ -775,36 +773,20 @@ async function fetchAll() {
     document.getElementById('deployed').textContent = '$' + fmtU(deployed);
     document.getElementById('deployedPct').textContent = (100-resPct).toFixed(1) + '% of TVL';
 
-    // APY — separate so it doesn't block other fields
-    try {
-      var aaveRate = await getAaveAPY();
-      var vaultApy = (aaveRate * 0.70 * 0.98).toFixed(2);
-      document.getElementById('vaultApy').textContent = vaultApy + '%';
-    } catch(ae) { document.getElementById('vaultApy').textContent = '~2.2%'; }
+    // APY from API
+    document.getElementById('vaultApy').textContent = (apiData.apy || '2.20') + '%';
 
     var sb = document.getElementById('vaultStatus');
     var st = document.getElementById('vaultStatusText');
     if (paused) { sb.className='status-bar paused'; st.textContent='Vault Paused'; }
     else { sb.className='status-bar active'; st.textContent='Vault Active — Accepting Deposits'; }
 
-    // Credit (separate try/catch so vault data still shows if credit fails)
-    var pool = 0n, borrowed = 0n, creditU = 0;
-    try {
-      var [lp,tb] = await batchCall([
-        {to:CREDIT, data:SEL.lendingPool}, {to:CREDIT, data:SEL.totalBorrowed}
-      ]);
-      pool=decU(lp); borrowed=decU(tb);
-      creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
-
-      document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
-      document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
-      document.getElementById('creditUtil').textContent = creditU.toFixed(1) + '%';
-
-      for (var i=0; i<5; i++) {
-        var rh = await ethCall(CREDIT, SEL.collateralRatios + padUint(BigInt(i)));
-        document.getElementById('ratio'+i).textContent = Number(decU(rh))/100 + '%';
-      }
-    } catch(ce) { console.warn('Credit fetch:', ce); }
+    // Credit from API response
+    var pool = BigInt(apiData.lendingPool || '0'), borrowed = BigInt(apiData.totalBorrowed || '0');
+    var creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
+    document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
+    document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
+    document.getElementById('creditUtil').textContent = creditU.toFixed(1) + '%';
 
     // Update LLM markdown
     var md = document.getElementById('llm-markdown').textContent;
