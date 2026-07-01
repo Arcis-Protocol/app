@@ -687,6 +687,7 @@ async function batchCall(calls) {
   var batch = calls.map(function(c, i) {
     return {jsonrpc:'2.0',method:'eth_call',params:[{to:c.to,data:c.data},'latest'],id:i+1};
   });
+  // Try batch first
   try {
     var r = await fetch(RPC, {
       method: 'POST',
@@ -699,11 +700,21 @@ async function batchCall(calls) {
       return results.map(function(r){return r.result || '0x';});
     }
   } catch(e) {}
-  // Fallback: sequential with delay
+  // Fallback: sequential with delay + retry
   var out = [];
   for (var i = 0; i < calls.length; i++) {
-    try { out.push(await ethCall(calls[i].to, calls[i].data)); } catch(e) { out.push('0x'); }
-    if (i < calls.length - 1) await new Promise(function(r){setTimeout(r,150);});
+    var retries = 2;
+    while (retries > 0) {
+      try {
+        out.push(await ethCall(calls[i].to, calls[i].data));
+        break;
+      } catch(e) {
+        retries--;
+        if (retries > 0) await new Promise(function(r){setTimeout(r,300);});
+        else out.push('0x');
+      }
+    }
+    if (i < calls.length - 1) await new Promise(function(r){setTimeout(r,200);});
   }
   return out;
 }
