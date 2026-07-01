@@ -788,12 +788,13 @@ async function fetchAll() {
     else { sb.className='status-bar active'; st.textContent='Vault Active — Accepting Deposits'; }
 
     // Credit (separate try/catch so vault data still shows if credit fails)
+    var pool = 0n, borrowed = 0n, creditU = 0;
     try {
       var [lp,tb] = await batchCall([
         {to:CREDIT, data:SEL.lendingPool}, {to:CREDIT, data:SEL.totalBorrowed}
       ]);
-      var pool=decU(lp), borrowed=decU(tb);
-      var creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
+      pool=decU(lp); borrowed=decU(tb);
+      creditU = (pool+borrowed)>0n ? Number(borrowed*10000n/(pool+borrowed))/100 : 0;
 
       document.getElementById('lendingPool').textContent = '$' + fmtU(pool);
       document.getElementById('totalBorrowed').textContent = '$' + fmtU(borrowed);
@@ -803,7 +804,7 @@ async function fetchAll() {
         var rh = await ethCall(CREDIT, SEL.collateralRatios + padUint(BigInt(i)));
         document.getElementById('ratio'+i).textContent = Number(decU(rh))/100 + '%';
       }
-    } catch(ce) { console.warn('Credit fetch:', ce.message); }
+    } catch(ce) { console.warn('Credit fetch:', ce); }
 
     // Update LLM markdown
     var md = document.getElementById('llm-markdown').textContent;
