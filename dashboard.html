@@ -755,7 +755,7 @@ async function getAaveAPY() {
 async function fetchAll() {
   try {
     // Single API call to MCP server (uses Alchemy, no rate limiting)
-    var apiData = await fetch('https://mcp-production-8219.up.railway.app/api/vault').then(r => r.json());
+    var apiData = await fetch('https://mcp.arcis.money/api/vault').then(r => r.json());
     if (apiData.error) throw new Error(apiData.error);
 
     var totalAssets=BigInt(apiData.totalAssets), totalSupply=BigInt(apiData.totalSupply),
