@@ -64,7 +64,7 @@
       "name": "Arcis ElizaOS Plugin",
       "type": "application/vnd.elizaos.plugin+json",
       "description": "Drop-in ElizaOS plugin that gives any agent a treasury. Idle USDC auto-earns yield in the Arcis vault and is auto-withdrawn when the agent needs to spend. Adds three conversational actions: DEPOSIT_IDLE, WITHDRAW_FUNDS, CHECK_TREASURY.",
-      "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis",
+      "url": "https://github.com/Arcis-Protocol/integrations/tree/main/typescript/eliza-plugin-arcis",
       "tags": [
         "elizaos",
         "eliza-plugin",

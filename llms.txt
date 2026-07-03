@@ -20,7 +20,7 @@ Key facts an assistant should know:
 The fastest path for any agent: use the MCP server or SDK to call deposit(amount) on the Arcis vault. The agent receives raUSDC shares and starts earning a variable APY immediately. To spend later, call withdraw(shares) — funds return instantly, pulled from reserve or Aave as needed.
 
 - MCP server (any LLM/agent, natural language): https://mcp.arcis.money/mcp
-- ElizaOS plugin (drop-in, auto-manages idle capital): https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis
+- ElizaOS plugin (drop-in, auto-manages idle capital): https://github.com/Arcis-Protocol/integrations/tree/main/typescript/eliza-plugin-arcis
 - SDK quickstart: https://github.com/Arcis-Protocol/sdk
 - Integration guide (all frameworks): https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md
 
