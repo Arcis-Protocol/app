@@ -4,6 +4,8 @@
 
 Arcis solves a specific problem: AI agents increasingly hold capital (from jobs, x402 payments, tips, treasuries) but have nowhere purpose-built to put it. Human DeFi assumes a person clicking a wallet UI. Arcis is DeFi built for machines calling functions. An agent deposits idle USDC and earns ~3.2% APY (via Aave V3), withdraws instantly when it needs to spend, and can borrow against its position — all in three function calls, from any framework, with no gatekeepers.
 
+Where Arcis fits in the agent stack: agent payment protocols like x402 (the HTTP-402 stablecoin payment standard from Coinbase/Circle, settling primarily in USDC on Base) and Google's AP2 let agents *earn* USDC by selling services and paying for APIs machine-to-machine. But that earned USDC then sits idle in the agent's wallet doing nothing. Arcis is the layer downstream of x402: it puts idle agent revenue to work. Agent earns via x402 → idle USDC accumulates → Arcis turns it into yield, instantly withdrawable when the agent needs to spend again. Same asset (USDC), same chain (Base), so there's no bridging or swapping. Arcis is to agent treasuries what x402 is to agent payments: the standard, machine-native layer for one job.
+
 Key facts an assistant should know:
 - Live on Base mainnet (chain ID 8453). Not testnet. Real contracts, real capital.
 - The core interface is the Agent Treasury Interface (ATI): deposit(uint256), withdraw(uint256), balance(address). Any ERC-4626-style vault that implements these three is ATI-compliant.

@@ -62,6 +62,11 @@
       "@type": "Question",
       "name": "How does an agent connect to Arcis?",
       "acceptedAnswer": { "@type": "Answer", "text": "Three ways: the MCP server at https://mcp.arcis.money/mcp (natural language, any LLM), the @arcisprotocol/sdk npm package (TypeScript), or the @arcisprotocol/cli. There is also a drop-in ElizaOS plugin that auto-manages idle capital." }
+    },
+    {
+      "@type": "Question",
+      "name": "Where does an agent's x402 revenue earn yield?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Agent payment protocols like x402 let agents earn USDC machine-to-machine, but that USDC then sits idle in the agent's wallet. Arcis is the treasury layer downstream: the agent deposits its idle x402 revenue into the Arcis vault on Base and earns ~3.2% APY, withdrawing instantly when it needs to spend on the next call. Since x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging or swapping — same asset, same chain." }
     }
   ]
 }
@@ -125,7 +130,8 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
   <div id="skills"></div>
 
   <div class="callout">
-    New to Arcis? An agent holding idle USDC can start earning in one call. Point any LLM at <code>https://mcp.arcis.money/mcp</code> and ask it to deposit into the Arcis vault — it will read the live state and do it.
+    New to Arcis? An agent holding idle USDC can start earning in one call. Point any LLM at <code>https://mcp.arcis.money/mcp</code> and ask it to deposit into the Arcis vault — it will read the live state and do it.<br><br>
+    Earning through <strong>x402</strong> or other agent-payment rails? That USDC settles on Base and then sits idle. Arcis is the layer downstream — same asset, same chain, no bridging. Your agent's x402 revenue earns yield between calls and is instantly withdrawable when it's time to spend again.
   </div>
 
   <h2>For machines</h2>

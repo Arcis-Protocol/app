@@ -5,7 +5,10 @@
   "publisher": "Arcis Protocol",
   "url": "https://arcis.money/skills",
   "protocol": "Agent Treasury Interface (ATI)",
-  "network": { "name": "Base", "chainId": 8453 },
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
   "access": {
     "mcp": "https://mcp.arcis.money/mcp",
     "sdk": "@arcisprotocol/sdk",
@@ -19,8 +22,15 @@
       "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
       "category": "yield",
       "url": "https://arcis.money/skills/earn-yield-idle-usdc.json",
-      "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks.",
-      "tags": ["yield", "idle-capital", "usdc", "deposit", "treasury"]
+      "when_to_use": "The agent holds USDC sitting idle between jobs or payments \u2014 including USDC earned via x402 and other agent-payment rails. Turns dead stablecoin balances into yield.",
+      "tags": [
+        "yield",
+        "idle-capital",
+        "usdc",
+        "deposit",
+        "treasury",
+        "x402"
+      ]
     },
     {
       "id": "auto-manage-treasury",
@@ -29,7 +39,12 @@
       "category": "treasury",
       "url": "https://arcis.money/skills/auto-manage-treasury.json",
       "when_to_use": "The agent earns and spends USDC over time and wants idle balances to always be productive without manual action.",
-      "tags": ["treasury", "idle-capital", "automation", "yield"]
+      "tags": [
+        "treasury",
+        "idle-capital",
+        "automation",
+        "yield"
+      ]
     },
     {
       "id": "check-treasury-position",
@@ -38,7 +53,12 @@
       "category": "read",
       "url": "https://arcis.money/skills/check-treasury-position.json",
       "when_to_use": "The agent or its operator wants to know how much is deposited and what it's earning.",
-      "tags": ["read", "position", "balance", "apy"]
+      "tags": [
+        "read",
+        "position",
+        "balance",
+        "apy"
+      ]
     },
     {
       "id": "borrow-against-position",
@@ -47,7 +67,13 @@
       "category": "credit",
       "url": "https://arcis.money/skills/borrow-against-position.json",
       "when_to_use": "The agent needs spending liquidity but wants to keep its yield-earning position intact.",
-      "tags": ["credit", "borrow", "reputation", "erc-8004", "collateral"]
+      "tags": [
+        "credit",
+        "borrow",
+        "reputation",
+        "erc-8004",
+        "collateral"
+      ]
     },
     {
       "id": "discover-agent-vaults",
@@ -56,7 +82,12 @@
       "category": "read",
       "url": "https://arcis.money/skills/discover-agent-vaults.json",
       "when_to_use": "The agent wants to find or use a vault for a specific agent token (e.g. $CUSTOS), or enumerate all available vaults.",
-      "tags": ["read", "vault-factory", "discovery", "agent-token"]
+      "tags": [
+        "read",
+        "vault-factory",
+        "discovery",
+        "agent-token"
+      ]
     },
     {
       "id": "deposit-agent-token",
@@ -65,7 +96,12 @@
       "category": "treasury",
       "url": "https://arcis.money/skills/deposit-agent-token.json",
       "when_to_use": "The agent holds a token that has an Arcis vault and wants custody plus the ability to borrow against it.",
-      "tags": ["treasury", "agent-token", "deposit", "collateral"]
+      "tags": [
+        "treasury",
+        "agent-token",
+        "deposit",
+        "collateral"
+      ]
     }
   ]
 }

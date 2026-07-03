@@ -4,7 +4,7 @@
   "name": "Earn Yield on Idle USDC",
   "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
   "category": "yield",
-  "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks. This skill converts dead capital into ~3.2% APY with instant withdrawal liquidity.",
+  "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks \u2014 for example USDC earned through x402 or other agent-payment rails that would otherwise sit dead in the wallet. This skill converts idle stablecoin balances into ~3.2% APY with instant withdrawal liquidity.",
   "inputs": [
     {
       "name": "amount",
@@ -51,5 +51,9 @@
     "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
     "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
   },
-  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md",
+  "tags": [
+    "x402",
+    "stablecoin-rails"
+  ]
 }

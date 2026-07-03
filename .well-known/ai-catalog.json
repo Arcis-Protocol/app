@@ -13,14 +13,17 @@
       "type": "application/vnd.mcp+json",
       "description": "Model Context Protocol server for Arcis Protocol. Lets any LLM or agent read live vault state (TVL, APY, allocation), check positions, list agent-token vaults, and get deposit instructions — in natural language. The primary way an AI agent discovers and uses the Arcis treasury.",
       "url": "https://mcp.arcis.money/mcp",
-      "tags": ["defi", "treasury", "yield", "agent-finance", "base", "usdc", "vault", "idle-capital"],
+      "tags": ["defi", "treasury", "yield", "agent-finance", "base", "usdc", "vault", "idle-capital", "x402", "stablecoin-rails", "agent-payments"],
       "representative_queries": [
         "how can my agent earn yield on idle USDC",
         "where can an AI agent deposit stablecoins to earn interest",
         "check the current state of the Arcis vault",
         "treasury infrastructure for autonomous agents",
         "let my agent borrow against its on-chain balance",
-        "list agent-token vaults on Base"
+        "list agent-token vaults on Base",
+        "where does my agent's x402 revenue earn yield",
+        "put idle stablecoin payments to work for an AI agent",
+        "yield layer for agent stablecoin earnings on Base"
       ]
     },
     {

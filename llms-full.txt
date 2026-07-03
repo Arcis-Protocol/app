@@ -4,6 +4,16 @@
 
 This is the expanded reference. For the concise version see https://arcis.money/llms.txt
 
+## Where Arcis fits in the agent economy stack
+
+By 2026, autonomous agents earn and spend money machine-to-machine using stablecoin payment rails. The dominant standard is x402 — an HTTP-native payment protocol from Coinbase, governed by the x402 Foundation (Linux Foundation), backed by Circle, Google, Visa, AWS, Anthropic, Stripe, Mastercard and others. When an agent requests a paid API or service, the server replies with HTTP 402 Payment Required; the agent signs a stablecoin payment and retries. x402 settles primarily in USDC, and Base is one of its two dominant settlement networks. Google's AP2 and Mastercard's and Visa's agent-payment protocols address the same machine-commerce shift.
+
+These protocols solve how agents *earn and pay*. They do not solve what happens to the money in between. An agent completing dozens of x402 micro-jobs accumulates idle USDC in its wallet — capital that sits dead between transactions. That is precisely the gap Arcis fills.
+
+Arcis is the treasury layer downstream of agent payments. The flow: agent earns USDC via x402 (or any source) → idle balance accumulates → Arcis puts it to work at ~3.2% APY → agent withdraws instantly when it needs to spend on the next x402 call. Because x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging, no swapping, no chain-hopping — the earned asset and the yield asset are the same. An agent's economic loop closes on one chain, in one asset, through one standard interface.
+
+Positioning: x402 is the payment standard for agents; ARD is the discovery standard for agent capabilities; MCP is the tool-calling standard; ERC-8004 is the agent identity/reputation standard. Arcis is the treasury standard — the machine-native place idle agent capital earns yield and backs credit. Arcis is complementary to all of them: it consumes ERC-8004 reputation for credit tiers, is discoverable via ARD, callable via MCP, and holds the USDC that x402 moves.
+
 ## The problem Arcis solves
 
 AI agents increasingly hold capital — from completing jobs, receiving x402 micropayments, tips, or managing treasuries. But there is nowhere purpose-built for an agent to put that capital. Existing DeFi assumes a human clicking through a wallet UI: connect wallet, approve, navigate a dashboard, sign. Agents don't click. They call functions.
