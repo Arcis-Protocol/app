@@ -432,6 +432,7 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
 <!-- Tabs -->
 <nav class="tabs" role="tablist" aria-label="Dashboard sections">
   <button class="tab active" role="tab" aria-selected="true" data-tab="vault">Vault</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="vaults">Agent Vaults</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="credit">Credit</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="bonds">Bonds</button>
   <button class="tab" role="tab" aria-selected="false" data-tab="contracts">Contracts</button>
@@ -541,6 +542,15 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
   </section>
 
   <!-- CREDIT TAB -->
+  <section class="tab-panel" id="panel-vaults" role="tabpanel" aria-label="Agent-token vaults">
+    <div style="padding:8px 0">
+      <p style="color:var(--ivory-muted);font-size:13px;margin-bottom:16px;line-height:1.6">
+        The vault factory deploys an ERC-4626 vault for any agent token &mdash; same security stack as the flagship USDC vault. Deposit an agent token, receive a receipt (raTOKEN), use it as credit collateral. Reserve-only at launch.
+      </p>
+      <div id="vaultsList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </section>
+
   <section class="tab-panel" id="panel-credit" role="tabpanel" aria-label="Credit module">
     <div class="stats-row">
       <article class="stat-card"><div class="stat-label">Lending Pool</div><div class="stat-value green" id="lendingPool">—</div><div class="stat-sub">available to borrow</div></article>
@@ -860,8 +870,36 @@ document.getElementById('tryDeployer').addEventListener('click', function() {
 });
 
 // ── Init ──
+async function fetchVaults() {
+  var list = document.getElementById('vaultsList');
+  if (!list) return;
+  try {
+    var data = await fetch('https://mcp.arcis.money/api/vaults').then(function(r){return r.json();});
+    if (!data.vaults || !data.vaults.length) {
+      list.innerHTML = '<div style="color:var(--ivory-muted);font-size:13px">No vaults deployed yet.</div>';
+      return;
+    }
+    list.innerHTML = data.vaults.map(function(v){
+      var tvl = v.totalAssets ? ('$' + (Number(v.totalAssets)/1e6).toLocaleString(undefined,{maximumFractionDigits:2})) : '';
+      var flag = v.flagship ? '<span style="color:var(--gold);font-size:10px;letter-spacing:1px;margin-left:8px">FLAGSHIP</span>' : '';
+      var status = v.paused ? '<span style="color:var(--red)">paused</span>' : '<span style="color:var(--green)">active</span>';
+      return '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--stone)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div><span style="color:var(--gold);font-weight:600">' + (v.symbol||'') + '</span>' + flag +
+        '<div style="color:var(--ivory-muted);font-size:11px;margin-top:2px">' + (v.name||'') + '</div></div>' +
+        '<div style="text-align:right"><div style="color:var(--ivory);font-size:14px">' + tvl + '</div>' +
+        '<a href="https://basescan.org/address/' + v.vault + '" target="_blank" style="color:var(--gold-dim);font-size:10px;font-family:monospace">' + v.vault.slice(0,10) + '...</a></div>' +
+        '</div></div>';
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="color:var(--ivory-muted);font-size:13px">Vault registry unavailable.</div>';
+  }
+}
+
 fetchAll();
+fetchVaults();
 setInterval(fetchAll, 15000);
+setInterval(fetchVaults, 30000);
 fetchEvents();
 
 // ── Wallet Connect (EIP-6963 + legacy injected) ──
