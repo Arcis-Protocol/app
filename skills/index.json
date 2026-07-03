@@ -19,7 +19,7 @@
     {
       "id": "earn-yield-idle-usdc",
       "name": "Earn Yield on Idle USDC",
-      "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
+      "summary": "Deposit idle USDC into the Arcis vault and earn a variable APY via Aave V3. Withdraw instantly anytime.",
       "category": "yield",
       "url": "https://arcis.money/skills/earn-yield-idle-usdc.json",
       "when_to_use": "The agent holds USDC sitting idle between jobs or payments \u2014 including USDC earned via x402 and other agent-payment rails. Turns dead stablecoin balances into yield.",

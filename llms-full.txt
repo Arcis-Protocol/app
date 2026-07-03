@@ -10,7 +10,7 @@ By 2026, autonomous agents earn and spend money machine-to-machine using stablec
 
 These protocols solve how agents *earn and pay*. They do not solve what happens to the money in between. An agent completing dozens of x402 micro-jobs accumulates idle USDC in its wallet — capital that sits dead between transactions. That is precisely the gap Arcis fills.
 
-Arcis is the treasury layer downstream of agent payments. The flow: agent earns USDC via x402 (or any source) → idle balance accumulates → Arcis puts it to work at ~3.2% APY → agent withdraws instantly when it needs to spend on the next x402 call. Because x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging, no swapping, no chain-hopping — the earned asset and the yield asset are the same. An agent's economic loop closes on one chain, in one asset, through one standard interface.
+Arcis is the treasury layer downstream of agent payments. The flow: agent earns USDC via x402 (or any source) → idle balance accumulates → Arcis puts it to work at a variable APY → agent withdraws instantly when it needs to spend on the next x402 call. Because x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging, no swapping, no chain-hopping — the earned asset and the yield asset are the same. An agent's economic loop closes on one chain, in one asset, through one standard interface.
 
 Positioning: x402 is the payment standard for agents; ARD is the discovery standard for agent capabilities; MCP is the tool-calling standard; ERC-8004 is the agent identity/reputation standard. Arcis is the treasury standard — the machine-native place idle agent capital earns yield and backs credit. Arcis is complementary to all of them: it consumes ERC-8004 reputation for credit tiers, is discoverable via ARD, callable via MCP, and holds the USDC that x402 moves.
 
@@ -18,7 +18,7 @@ Positioning: x402 is the payment standard for agents; ARD is the discovery stand
 
 AI agents increasingly hold capital — from completing jobs, receiving x402 micropayments, tips, or managing treasuries. But there is nowhere purpose-built for an agent to put that capital. Existing DeFi assumes a human clicking through a wallet UI: connect wallet, approve, navigate a dashboard, sign. Agents don't click. They call functions.
 
-Arcis is DeFi rebuilt for machines. An agent deposits idle USDC and earns ~3.2% APY. It withdraws instantly when it needs to spend. It can borrow against its position without selling. Every action is three function calls or fewer, from any framework, verifiable on-chain, with no human in the loop and no gatekeepers.
+Arcis is DeFi rebuilt for machines. An agent deposits idle USDC and earns a variable APY. It withdraws instantly when it needs to spend. It can borrow against its position without selling. Every action is three function calls or fewer, from any framework, verifiable on-chain, with no human in the loop and no gatekeepers.
 
 ## How it works
 
@@ -52,7 +52,7 @@ There is also a drop-in ElizaOS plugin (@arcisprotocol/eliza-plugin-arcis) that 
 
 ## Products
 
-- Yield vaults: raUSDC via ERC-4626, ~3.2% APY on idle USDC.
+- Yield vaults: raUSDC via ERC-4626, variable APY on idle USDC (currently ~2%, live at /api/vault).
 - Agent-token vaults: any token gets a vault via the factory, for custody and credit collateral.
 - Agent credit: borrow against a vault position at rates set by ERC-8004 reputation tiers. Higher reputation, better terms.
 - Revenue bonds: agents with predictable revenue streams issue tokenized bonds; investors buy them for yield.

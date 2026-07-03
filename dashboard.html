@@ -783,8 +783,8 @@ async function getAaveAPY() {
     var idx = decU(income);
     // Approximate APY from normalized income (index grows over time)
     // For display, use a reasonable Aave USDC rate
-    return 3.2; // Live rate ~3.2% — will be replaced with dynamic calculation
-  } catch(e) { return 3.2; }
+    return null; // fall through to live MCP /api/vault APY; no hardcoded guess
+  } catch(e) { return null; }
 }
 
 async function fetchAll() {

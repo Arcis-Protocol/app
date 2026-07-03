@@ -2,9 +2,9 @@
   "id": "earn-yield-idle-usdc",
   "schema": "arcis-skill/1.0",
   "name": "Earn Yield on Idle USDC",
-  "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
+  "summary": "Deposit idle USDC into the Arcis vault and earn a variable APY via Aave V3. Withdraw instantly anytime.",
   "category": "yield",
-  "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks \u2014 for example USDC earned through x402 or other agent-payment rails that would otherwise sit dead in the wallet. This skill converts idle stablecoin balances into ~3.2% APY with instant withdrawal liquidity.",
+  "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks \u2014 for example USDC earned through x402 or other agent-payment rails that would otherwise sit dead in the wallet. This skill converts idle stablecoin balances into a variable APY with instant withdrawal liquidity.",
   "inputs": [
     {
       "name": "amount",
@@ -37,7 +37,7 @@
       "deposit": "vault.deposit(amount) // selector 0xb6b55f25"
     }
   },
-  "returns_yield": "~3.2% APY (Aave V3, net of protocol fee)",
+  "returns_yield": "Variable APY (Aave V3, net of protocol fee)",
   "risk": "Vault deploys 70% to Aave V3, keeps 30% liquid. 0.1% fee only on withdrawals within 24h of deposit.",
   "protocol": "Agent Treasury Interface (ATI)",
   "network": {

@@ -34,7 +34,7 @@
     "description": "The treasury layer for AI agents. Financial infrastructure on Base: yield vaults, agent credit, revenue bonds via the Agent Treasury Interface."
   },
   "itemListElement": [
-    { "@type": "HowTo", "name": "Earn Yield on Idle USDC", "description": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3, withdraw instantly.", "url": "https://arcis.money/skills/earn-yield-idle-usdc.json" },
+    { "@type": "HowTo", "name": "Earn Yield on Idle USDC", "description": "Deposit idle USDC into the Arcis vault and earn a variable APY via Aave V3, withdraw instantly.", "url": "https://arcis.money/skills/earn-yield-idle-usdc.json" },
     { "@type": "HowTo", "name": "Auto-Manage Agent Treasury", "description": "Continuously sweep idle USDC into yield and pull it back when the agent needs to spend.", "url": "https://arcis.money/skills/auto-manage-treasury.json" },
     { "@type": "HowTo", "name": "Check Treasury Position", "description": "Read an agent's vault position, value, and current APY.", "url": "https://arcis.money/skills/check-treasury-position.json" },
     { "@type": "HowTo", "name": "Borrow Against Position and Reputation", "description": "Open a credit line against a vault position at ERC-8004 reputation-tier rates.", "url": "https://arcis.money/skills/borrow-against-position.json" },
@@ -51,7 +51,7 @@
     {
       "@type": "Question",
       "name": "How can an AI agent earn yield on idle USDC?",
-      "acceptedAnswer": { "@type": "Answer", "text": "An agent deposits idle USDC into the Arcis vault on Base mainnet and earns ~3.2% APY via Aave V3. It calls deposit(amount) through the Arcis MCP server, TypeScript SDK, or CLI, receives raUSDC receipt shares, and can withdraw instantly anytime with withdraw(shares). This is the Agent Treasury Interface: deposit, withdraw, balance." }
+      "acceptedAnswer": { "@type": "Answer", "text": "An agent deposits idle USDC into the Arcis vault on Base mainnet and earns a variable APY via Aave V3. It calls deposit(amount) through the Arcis MCP server, TypeScript SDK, or CLI, receives raUSDC receipt shares, and can withdraw instantly anytime with withdraw(shares). This is the Agent Treasury Interface: deposit, withdraw, balance." }
     },
     {
       "@type": "Question",
@@ -61,13 +61,34 @@
     {
       "@type": "Question",
       "name": "How does an agent connect to Arcis?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Three ways: the MCP server at https://mcp.arcis.money/mcp (natural language, any LLM), the @arcisprotocol/sdk npm package (TypeScript), or the @arcisprotocol/cli. There is also a drop-in ElizaOS plugin that auto-manages idle capital." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Many ways. Directly: the MCP server at https://mcp.arcis.money/mcp (natural language, any LLM), the @arcisprotocol/sdk npm package (TypeScript), or the @arcisprotocol/cli. Or through a framework: arcis-agent-kit (OpenAI, Claude, Gemini, Grok, CrewAI, AutoGen, Coinbase AgentKit, Pydantic AI, Google ADK), arcis-langchain (LangChain), and TypeScript packages for the Vercel AI SDK, GAME by Virtuals, and ElizaOS. OpenClaw and Hermes have skill files. All reach the same interface on Base mainnet." }
     },
     {
       "@type": "Question",
       "name": "Where does an agent's x402 revenue earn yield?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Agent payment protocols like x402 let agents earn USDC machine-to-machine, but that USDC then sits idle in the agent's wallet. Arcis is the treasury layer downstream: the agent deposits its idle x402 revenue into the Arcis vault on Base and earns ~3.2% APY, withdrawing instantly when it needs to spend on the next call. Since x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging or swapping — same asset, same chain." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Agent payment protocols like x402 let agents earn USDC machine-to-machine, but that USDC then sits idle in the agent's wallet. Arcis is the treasury layer downstream: the agent deposits its idle x402 revenue into the Arcis vault on Base and earns a variable APY via Aave V3, withdrawing instantly when it needs to spend on the next call. Since x402 settles in USDC on Base and the Arcis vault holds USDC on Base, there is no bridging or swapping — same asset, same chain." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which agent frameworks does Arcis support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Arcis has native integrations for most agent frameworks. In Python, one install (arcis-agent-kit) covers OpenAI, Claude, Gemini, Grok (xAI), CrewAI, AutoGen, Coinbase AgentKit, Pydantic AI, and Google ADK; LangChain has its own package (arcis-langchain). In TypeScript/JavaScript there are packages for the Vercel AI SDK (@arcisprotocol/vercel-ai-arcis), GAME by Virtuals (@arcisprotocol/game-plugin-arcis), and ElizaOS (@arcisprotocol/eliza-plugin-arcis). Model-agnostic runtimes like OpenClaw and Hermes have skill files, and any MCP client can use the hosted server at https://mcp.arcis.money/mcp. Every integration reaches the same Agent Treasury Interface on Base mainnet: deposit, withdraw, balance." }
     }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Arcis Framework Integrations",
+  "description": "Native Arcis treasury integrations for agent frameworks and runtimes. Earn yield on idle USDC from any stack on Base mainnet.",
+  "url": "https://arcis.money/skills",
+  "itemListElement": [
+    { "@type": "SoftwareApplication", "name": "arcis-agent-kit", "applicationCategory": "DeveloperApplication", "operatingSystem": "Cross-platform", "description": "Python toolkit with one shared client and nine adapters: OpenAI, Claude, Gemini, Grok (xAI), CrewAI, AutoGen, Coinbase AgentKit, Pydantic AI, Google ADK.", "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/arcis-agent-kit", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } },
+    { "@type": "SoftwareApplication", "name": "arcis-langchain", "applicationCategory": "DeveloperApplication", "operatingSystem": "Cross-platform", "description": "LangChain toolkit: seven StructuredTools for the Arcis treasury with live APY reads.", "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/langchain-arcis", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } },
+    { "@type": "SoftwareApplication", "name": "@arcisprotocol/vercel-ai-arcis", "applicationCategory": "DeveloperApplication", "operatingSystem": "Cross-platform", "description": "Vercel AI SDK tools for the Arcis treasury — six tools via the AI SDK tool() interface, any model.", "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/vercel-ai-arcis", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } },
+    { "@type": "SoftwareApplication", "name": "@arcisprotocol/game-plugin-arcis", "applicationCategory": "DeveloperApplication", "operatingSystem": "Cross-platform", "description": "GAME (Virtuals Protocol) plugin: an ArcisPlugin exposing five GameFunctions for treasury management.", "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/game-plugin-arcis", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } },
+    { "@type": "SoftwareApplication", "name": "@arcisprotocol/eliza-plugin-arcis", "applicationCategory": "DeveloperApplication", "operatingSystem": "Cross-platform", "description": "ElizaOS plugin that auto-manages an agent's idle USDC on Base.", "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis", "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" } }
   ]
 }
 </script>
@@ -111,6 +132,17 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 .foot { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ivory-muted); }
 .foot a { color: var(--ivory-dim); }
 .latin { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--gold); margin-top: 8px; }
+.fw-group { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin: 28px 0 12px; }
+.fw { border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 12px; background: var(--stone); transition: border-color .2s; }
+.fw:hover { border-color: var(--border-hover); }
+.fw-name { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 6px; }
+.fw-name a { color: var(--ivory); }
+.fw-name a:hover { color: var(--gold-bright); }
+.fw-summary { font-size: 13px; color: var(--ivory-dim); margin-bottom: 12px; }
+.fw-install { font-family: ui-monospace, 'SF Mono', monospace; font-size: 12.5px; color: var(--gold-bright); background: var(--marble); padding: 5px 10px; border-radius: 5px; display: inline-block; word-break: break-all; }
+.fw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+.fw-grid .fw { margin-bottom: 0; }
+@media (max-width: 640px) { .fw-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -132,6 +164,59 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
   <div class="callout">
     New to Arcis? An agent holding idle USDC can start earning in one call. Point any LLM at <code>https://mcp.arcis.money/mcp</code> and ask it to deposit into the Arcis vault — it will read the live state and do it.<br><br>
     Earning through <strong>x402</strong> or other agent-payment rails? That USDC settles on Base and then sits idle. Arcis is the layer downstream — same asset, same chain, no bridging. Your agent's x402 revenue earns yield between calls and is instantly withdrawable when it's time to spend again.
+  </div>
+
+  <h2>Framework integrations</h2>
+  <p class="section-sub">Drop Arcis into whatever your agent already runs on. One treasury, every stack — live on Base mainnet.</p>
+
+  <div class="fw-group">Python · one install, every model</div>
+  <div class="fw">
+    <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/arcis-agent-kit">arcis-agent-kit</a></div>
+    <div class="fw-summary">Nine adapters over one shared client: OpenAI · Claude · Gemini · Grok (xAI) · CrewAI · AutoGen · Coinbase AgentKit · Pydantic AI · Google ADK.</div>
+    <div class="fw-install">pip install arcis-agent-kit</div>
+  </div>
+
+  <div class="fw-group">LangChain</div>
+  <div class="fw">
+    <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/langchain-arcis">arcis-langchain</a></div>
+    <div class="fw-summary">Seven StructuredTools with live APY reads. Drop into any LangChain agent or graph.</div>
+    <div class="fw-install">pip install arcis-langchain</div>
+  </div>
+
+  <div class="fw-group">TypeScript · JavaScript</div>
+  <div class="fw-grid">
+    <div class="fw">
+      <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/vercel-ai-arcis">Vercel AI SDK</a></div>
+      <div class="fw-summary">Six tools via the AI SDK's <code>tool()</code>, any model.</div>
+      <div class="fw-install">npm i @arcisprotocol/vercel-ai-arcis</div>
+    </div>
+    <div class="fw">
+      <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/game-plugin-arcis">GAME · Virtuals</a></div>
+      <div class="fw-summary">ArcisPlugin with five GameFunctions.</div>
+      <div class="fw-install">npm i @arcisprotocol/game-plugin-arcis</div>
+    </div>
+    <div class="fw">
+      <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis">ElizaOS</a></div>
+      <div class="fw-summary">Drop-in plugin that auto-manages idle capital.</div>
+      <div class="fw-install">npm i @arcisprotocol/eliza-plugin-arcis</div>
+    </div>
+    <div class="fw">
+      <div class="fw-name"><a href="https://mcp.arcis.money/mcp">Any MCP client</a></div>
+      <div class="fw-summary">Natural-language tools over the hosted MCP server.</div>
+      <div class="fw-install">https://mcp.arcis.money/mcp</div>
+    </div>
+  </div>
+
+  <div class="fw-group">Model-agnostic runtimes</div>
+  <div class="fw-grid">
+    <div class="fw">
+      <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/openclaw-arcis">OpenClaw</a></div>
+      <div class="fw-summary">Skill file + MCP config for the OpenClaw runtime.</div>
+    </div>
+    <div class="fw">
+      <div class="fw-name"><a href="https://github.com/Arcis-Protocol/docs/tree/main/examples/hermes-arcis">Hermes Agent</a></div>
+      <div class="fw-summary">Treasury skill for <code>~/.hermes/skills/</code>.</div>
+    </div>
   </div>
 
   <h2>For machines</h2>

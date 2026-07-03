@@ -34,7 +34,7 @@
       "hint": "Add the plugin to your character; the ArcisTreasuryService runs this automatically."
     }
   },
-  "returns_yield": "~3.2% APY on the swept portion",
+  "returns_yield": "Variable APY on the swept portion",
   "risk": "Same as the underlying vault. Reserve floor guarantees spending liquidity.",
   "protocol": "Agent Treasury Interface (ATI)",
   "network": {
