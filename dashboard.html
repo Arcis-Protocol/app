@@ -548,6 +548,23 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
         The vault factory deploys an ERC-4626 vault for any agent token &mdash; same security stack as the flagship USDC vault. Deposit an agent token, receive a receipt (raTOKEN), use it as credit collateral. Reserve-only at launch.
       </p>
       <div id="vaultsList" style="display:flex;flex-direction:column;gap:10px"></div>
+
+      <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ivory);margin-bottom:4px">Create a Vault</h3>
+        <p id="createVaultIntro" style="color:var(--ivory-muted);font-size:12px;margin-bottom:14px;line-height:1.6">
+          Any agent token can have a vault. Enter the token address below.
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:10px;max-width:520px">
+          <input id="cvAsset" placeholder="Token contract address (0x...)" style="background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-family:monospace;font-size:13px" />
+          <div style="display:flex;gap:10px">
+            <input id="cvName" placeholder="Vault name (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-size:13px" />
+            <input id="cvSymbol" placeholder="raSYMBOL (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-size:13px" />
+          </div>
+          <button class="action-submit" id="createVaultBtn" onclick="submitVaultRequest()">Request Vault</button>
+        </div>
+        <div id="createVaultResult" style="display:none;margin-top:12px;font-size:13px;color:var(--ivory-muted)"></div>
+      </div>
     </div>
   </section>
 
@@ -667,6 +684,8 @@ const VAULT = '0x00325d9da832b38179ed2f0dabd4062d93e325a7';
 const CREDIT = '0xdf31800e620f728297340d66acf5a306f07ce7a1';
 const USDC_ADDR = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const DEPLOYER = '0xB390c9a4fB16389B6edd468f18AB2597bdf857db';
+const FACTORY = '0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC';
+const FACTORY_OWNER = '0x0FA8aa44683D68C760B3743fC872692c24344642';
 
 // Function selectors (precomputed keccak256 first 4 bytes)
 const SEL = {
@@ -896,8 +915,112 @@ async function fetchVaults() {
   }
 }
 
+// ── Create Vault (owner) / Request Vault (everyone else) ──
+function isFactoryOwner() {
+  return connectedAccount && connectedAccount.toLowerCase() === FACTORY_OWNER.toLowerCase();
+}
+
+// Adjust the create-vault UI based on who's connected.
+function refreshCreateVaultUI() {
+  var btn = document.getElementById('createVaultBtn');
+  var intro = document.getElementById('createVaultIntro');
+  if (!btn) return;
+  if (isFactoryOwner()) {
+    btn.textContent = 'Create Vault';
+    intro.innerHTML = 'You are the factory owner. Vaults you create are official Arcis vaults. Defaults: reserve-only, 1-token minimum, no fee.';
+  } else {
+    btn.textContent = 'Request Vault';
+    intro.innerHTML = 'Any agent token can have a vault. Submit a request and the Arcis keeper reviews it. (Vault creation is curated to protect the registry from spam and scam tokens.)';
+  }
+}
+
+// Minimal ABI encoder for createVault(address,string,string,uint256,uint256,uint256,address,uint256)
+function encodeCreateVault(asset, name, symbol, minDeposit, depositCap, feeBps, feeRecipient, reserveBps) {
+  var sel = '0xda87530f'; // createVault(address,string,string,uint256,uint256,uint256,address,uint256)
+  function enc(s) {
+    var hex = ''; for (var i=0;i<s.length;i++){ hex += s.charCodeAt(i).toString(16).padStart(2,'0'); }
+    var len = padUint(s.length);
+    var padded = hex; while (padded.length % 64 !== 0) padded += '0';
+    return { len: len, body: padded };
+  }
+  var head = [];
+  var tail = [];
+  // 8 params; strings at positions 1 and 2 are dynamic (offsets)
+  var nameE = enc(name), symE = enc(symbol);
+  // head slots (32 bytes each): asset, off(name), off(symbol), minDeposit, depositCap, feeBps, feeRecipient, reserveBps
+  var headCount = 8;
+  var base = headCount * 32;
+  var offName = base;
+  var nameChunk = nameE.len + nameE.body;
+  var offSym = base + (nameChunk.length/2);
+  head.push(padAddr(asset));
+  head.push(padUint(offName));
+  head.push(padUint(offSym));
+  head.push(padUint(minDeposit));
+  head.push(padUint(depositCap));
+  head.push(padUint(feeBps));
+  head.push(padAddr(feeRecipient));
+  head.push(padUint(reserveBps));
+  tail.push(nameChunk);
+  tail.push(symE.len + symE.body);
+  return sel + head.join('') + tail.join('');
+}
+
+async function submitVaultRequest() {
+  var asset = document.getElementById('cvAsset').value.trim();
+  var name = document.getElementById('cvName').value.trim();
+  var symbol = document.getElementById('cvSymbol').value.trim();
+  var result = document.getElementById('createVaultResult');
+  result.style.display = 'block';
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(asset)) {
+    result.innerHTML = '<span style="color:var(--red)">Enter a valid token address.</span>';
+    return;
+  }
+
+  // Non-owner (or not connected): submit a request via Telegram deep link.
+  if (!isFactoryOwner()) {
+    var msg = 'Arcis vault request%0AToken: ' + asset + (name ? '%0AName: ' + name : '') + (symbol ? '%0ASymbol: ' + symbol : '');
+    result.innerHTML = 'Vault creation is curated. <a href="https://t.me/brandononchain?text=' + msg + '" target="_blank" style="color:var(--gold)">Send your request &rarr;</a> and the keeper will review it.';
+    return;
+  }
+
+  // Owner path — real on-chain createVault.
+  if (!walletProvider) { result.innerHTML = '<span style="color:var(--red)">Connect your wallet.</span>'; return; }
+  var btn = document.getElementById('createVaultBtn');
+  btn.disabled = true; btn.textContent = 'Reading token...';
+
+  try {
+    // Read decimals for defaults
+    var decHex = await ethCall(asset, '0x313ce567');
+    var decimals = decHex && decHex !== '0x' ? parseInt(decHex, 16) : 18;
+    var symHex = '';
+    try { symHex = await ethCall(asset, '0x95d89b41'); } catch(e){}
+
+    var tokenSym = symbol || 'TOKEN';
+    var vName = name || ('Arcis ' + tokenSym);
+    var vSym = symbol || ('ra' + tokenSym);
+    var minDeposit = BigInt(10) ** BigInt(decimals);           // 1 token
+    var depositCap = BigInt(10) ** BigInt(8 + decimals);        // 100M tokens
+    var feeBps = 0n, feeRecipient = FACTORY_OWNER, reserveBps = 10000n;
+
+    btn.textContent = 'Creating vault...';
+    var data = encodeCreateVault(asset, vName, vSym, minDeposit, depositCap, feeBps, feeRecipient, reserveBps);
+    var txHash = await walletProvider.request({
+      method: 'eth_sendTransaction',
+      params: [{ from: connectedAccount, to: FACTORY, data: data }],
+    });
+    result.innerHTML = 'Vault created. TX: <a href="https://basescan.org/tx/' + txHash + '" target="_blank" style="color:var(--gold)">' + txHash.slice(0,14) + '...</a>';
+    setTimeout(fetchVaults, 6000);
+  } catch(e) {
+    result.innerHTML = '<span style="color:var(--red)">Failed: ' + (e.message || e) + '</span>';
+  }
+  btn.disabled = false; refreshCreateVaultUI();
+}
+
 fetchAll();
 fetchVaults();
+refreshCreateVaultUI();
 setInterval(fetchAll, 15000);
 setInterval(fetchVaults, 30000);
 fetchEvents();
@@ -960,6 +1083,7 @@ async function connectWallet() {
 
     // Auto-lookup connected address
     document.getElementById('lookupInput').value = connectedAccount;
+    refreshCreateVaultUI();
     lookupPosition();
 
     // Listen for account changes
@@ -977,6 +1101,7 @@ function disconnectWallet() {
   btn.textContent = 'Connect Wallet';
   btn.classList.remove('connected');
   document.getElementById('actionsBox').style.display = 'none';
+  refreshCreateVaultUI();
 }
 
 // ── Action tabs ──
