@@ -11,9 +11,21 @@
       "id": "urn:ard:arcis.money:mcp-server",
       "name": "Arcis MCP Server",
       "type": "application/vnd.mcp+json",
-      "description": "Model Context Protocol server for Arcis Protocol. Lets any LLM or agent read live vault state (TVL, APY, allocation), check positions, list agent-token vaults, and get deposit instructions — in natural language. The primary way an AI agent discovers and uses the Arcis treasury.",
+      "description": "Model Context Protocol server for Arcis Protocol. Lets any LLM or agent read live vault state (TVL, APY, allocation), check positions, list agent-token vaults, and get deposit instructions \u2014 in natural language. The primary way an AI agent discovers and uses the Arcis treasury.",
       "url": "https://mcp.arcis.money/mcp",
-      "tags": ["defi", "treasury", "yield", "agent-finance", "base", "usdc", "vault", "idle-capital", "x402", "stablecoin-rails", "agent-payments"],
+      "tags": [
+        "defi",
+        "treasury",
+        "yield",
+        "agent-finance",
+        "base",
+        "usdc",
+        "vault",
+        "idle-capital",
+        "x402",
+        "stablecoin-rails",
+        "agent-payments"
+      ],
       "representative_queries": [
         "how can my agent earn yield on idle USDC",
         "where can an AI agent deposit stablecoins to earn interest",
@@ -32,7 +44,15 @@
       "type": "application/vnd.npm+json",
       "description": "TypeScript/JavaScript SDK for the Arcis treasury. Programmatic deposit/withdraw/balance, vault factory enumeration, idle-capital auto-management, agent credit and bonds. Works with any JS agent framework.",
       "url": "https://www.npmjs.com/package/@arcisprotocol/sdk",
-      "tags": ["defi", "treasury", "sdk", "typescript", "yield", "agent-finance", "base"],
+      "tags": [
+        "defi",
+        "treasury",
+        "sdk",
+        "typescript",
+        "yield",
+        "agent-finance",
+        "base"
+      ],
       "representative_queries": [
         "npm package for AI agent treasury",
         "typescript sdk to deposit USDC and earn yield",
@@ -45,7 +65,14 @@
       "type": "application/vnd.elizaos.plugin+json",
       "description": "Drop-in ElizaOS plugin that gives any agent a treasury. Idle USDC auto-earns yield in the Arcis vault and is auto-withdrawn when the agent needs to spend. Adds three conversational actions: DEPOSIT_IDLE, WITHDRAW_FUNDS, CHECK_TREASURY.",
       "url": "https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis",
-      "tags": ["elizaos", "eliza-plugin", "agent-finance", "yield", "treasury", "idle-capital"],
+      "tags": [
+        "elizaos",
+        "eliza-plugin",
+        "agent-finance",
+        "yield",
+        "treasury",
+        "idle-capital"
+      ],
       "representative_queries": [
         "elizaos plugin to earn yield on idle funds",
         "give my eliza agent a treasury",
@@ -58,7 +85,13 @@
       "type": "application/json",
       "description": "Machine-readable protocol configuration: contract addresses, ATI interface selectors, network details, and integration steps for Arcis on Base mainnet.",
       "url": "https://arcis.money/protocol.json",
-      "tags": ["config", "contracts", "ati", "base", "defi"],
+      "tags": [
+        "config",
+        "contracts",
+        "ati",
+        "base",
+        "defi"
+      ],
       "representative_queries": [
         "arcis protocol contract addresses",
         "ATI interface function selectors"
@@ -68,12 +101,54 @@
       "id": "urn:ard:arcis.money:skill-archive",
       "name": "Arcis Skill Archive",
       "type": "application/json",
-      "description": "Registry of agent-ready skills for the Arcis treasury — earn yield, manage idle capital, borrow against reputation, discover vaults. Each skill is a machine-readable capability with inputs, outputs, and invocation details.",
+      "description": "Registry of agent-ready skills for the Arcis treasury \u2014 earn yield, manage idle capital, borrow against reputation, discover vaults. Each skill is a machine-readable capability with inputs, outputs, and invocation details.",
       "url": "https://arcis.money/skills/index.json",
-      "tags": ["skills", "agent-finance", "treasury", "yield", "defi"],
+      "tags": [
+        "skills",
+        "agent-finance",
+        "treasury",
+        "yield",
+        "defi"
+      ],
       "representative_queries": [
         "skills for AI agent treasury management",
         "agent skill to earn yield on idle capital"
+      ]
+    },
+    {
+      "id": "urn:ard:arcis.money:framework-integrations",
+      "name": "Arcis Agent Framework Integrations",
+      "type": "application/vnd.arcis.integrations+json",
+      "description": "Native Arcis treasury integrations for agent frameworks and runtimes, so any agent can earn yield on idle USDC, check positions, and borrow against reputation on Base mainnet. Python: one install (arcis-agent-kit) covers OpenAI, Claude, Gemini, Grok (xAI), CrewAI, AutoGen, Coinbase AgentKit, Pydantic AI, and Google ADK; LangChain via arcis-langchain. TypeScript/JavaScript: @arcisprotocol/vercel-ai-arcis (Vercel AI SDK), @arcisprotocol/game-plugin-arcis (GAME by Virtuals), @arcisprotocol/eliza-plugin-arcis (ElizaOS). Model-agnostic runtimes OpenClaw and Hermes have skill files, and any MCP client can use the hosted server at https://mcp.arcis.money/mcp. Every integration reaches the same Agent Treasury Interface: deposit, withdraw, balance.",
+      "url": "https://arcis.money/skills",
+      "tags": [
+        "agent-frameworks",
+        "integrations",
+        "openai",
+        "claude",
+        "gemini",
+        "grok",
+        "crewai",
+        "autogen",
+        "coinbase-agentkit",
+        "pydantic-ai",
+        "google-adk",
+        "langchain",
+        "vercel-ai-sdk",
+        "game-virtuals",
+        "elizaos",
+        "openclaw",
+        "hermes",
+        "mcp",
+        "treasury",
+        "yield"
+      ],
+      "representative_queries": [
+        "how do I add an Arcis treasury to my LangChain agent",
+        "earn yield on idle USDC from a CrewAI or AutoGen agent",
+        "treasury tools for the Vercel AI SDK or Pydantic AI",
+        "which agent frameworks can put idle USDC to work on Base",
+        "Coinbase AgentKit action provider for earning yield"
       ]
     }
   ]
