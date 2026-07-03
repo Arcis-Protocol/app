@@ -899,20 +899,84 @@ async function fetchVaults() {
       return;
     }
     list.innerHTML = data.vaults.map(function(v){
-      var tvl = v.totalAssets ? ('$' + (Number(v.totalAssets)/1e6).toLocaleString(undefined,{maximumFractionDigits:2})) : '';
+      var dec = v.decimals || 6;
+      var tvl = v.totalAssets ? (Number(v.totalAssets)/Math.pow(10,dec)).toLocaleString(undefined,{maximumFractionDigits:2}) : '0';
+      var tvlLabel = v.flagship ? ('$' + tvl) : (tvl + ' ' + (v.symbol||'').replace(/^ra/,''));
       var flag = v.flagship ? '<span style="color:var(--gold);font-size:10px;letter-spacing:1px;margin-left:8px">FLAGSHIP</span>' : '';
-      var status = v.paused ? '<span style="color:var(--red)">paused</span>' : '<span style="color:var(--green)">active</span>';
+      var vid = v.vault;
+      // Flagship USDC vault uses the dedicated deposit box above; agent vaults get inline controls.
+      var controls = v.flagship ? '' : (
+        '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
+          '<input id="dep_' + vid + '" placeholder="Amount" style="flex:1;min-width:100px;background:var(--obsidian);border:1px solid var(--border);border-radius:5px;padding:8px 10px;color:var(--ivory);font-size:13px" />' +
+          '<button class="vdep" data-vault="' + vid + '" data-asset="' + v.asset + '" data-dec="' + dec + '" style="background:var(--gold-muted);color:var(--gold);border:1px solid rgba(212,175,105,0.3);border-radius:5px;padding:8px 14px;font-size:13px;cursor:pointer">Deposit</button>' +
+          '<button class="vwd" data-vault="' + vid + '" data-dec="' + dec + '" style="background:var(--stone);color:var(--ivory-muted);border:1px solid var(--border);border-radius:5px;padding:8px 14px;font-size:13px;cursor:pointer">Withdraw Max</button>' +
+        '</div>' +
+        '<div id="vres_' + vid + '" style="display:none;margin-top:8px;font-size:12px;color:var(--ivory-muted)"></div>'
+      );
       return '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--stone)">' +
         '<div style="display:flex;justify-content:space-between;align-items:center">' +
         '<div><span style="color:var(--gold);font-weight:600">' + (v.symbol||'') + '</span>' + flag +
         '<div style="color:var(--ivory-muted);font-size:11px;margin-top:2px">' + (v.name||'') + '</div></div>' +
-        '<div style="text-align:right"><div style="color:var(--ivory);font-size:14px">' + tvl + '</div>' +
+        '<div style="text-align:right"><div style="color:var(--ivory);font-size:14px">' + tvlLabel + '</div>' +
         '<a href="https://basescan.org/address/' + v.vault + '" target="_blank" style="color:var(--gold-dim);font-size:10px;font-family:monospace">' + v.vault.slice(0,10) + '...</a></div>' +
-        '</div></div>';
+        '</div>' + controls + '</div>';
     }).join('');
+    // Wire deposit/withdraw buttons via delegation
+    list.querySelectorAll('.vdep').forEach(function(b){
+      b.onclick = function(){ depositToVault(b.dataset.vault, b.dataset.asset, parseInt(b.dataset.dec)); };
+    });
+    list.querySelectorAll('.vwd').forEach(function(b){
+      b.onclick = function(){ withdrawFromVault(b.dataset.vault, parseInt(b.dataset.dec)); };
+    });
   } catch(e) {
     list.innerHTML = '<div style="color:var(--ivory-muted);font-size:13px">Vault registry unavailable.</div>';
   }
+}
+
+// Deposit any ERC-20 into its agent vault: approve then deposit(amount).
+async function depositToVault(vault, asset, decimals) {
+  var res = document.getElementById('vres_' + vault);
+  res.style.display = 'block';
+  if (!connectedAccount || !walletProvider) { res.innerHTML = '<span style="color:var(--red)">Connect your wallet first.</span>'; return; }
+  var input = document.getElementById('dep_' + vault);
+  var amtStr = (input.value || '').trim();
+  if (!amtStr || isNaN(amtStr)) { res.innerHTML = '<span style="color:var(--red)">Enter an amount.</span>'; return; }
+
+  // Parse to raw units at the token's decimals
+  var parts = amtStr.split('.');
+  var frac = (parts[1] || '').padEnd(decimals, '0').slice(0, decimals);
+  var amount = BigInt(parts[0] + frac);
+
+  try {
+    res.innerHTML = 'Approving...';
+    var approveData = '0x095ea7b3' + padAddr(vault) + 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    await walletProvider.request({ method: 'eth_sendTransaction', params: [{ from: connectedAccount, to: asset, data: approveData }] });
+
+    res.innerHTML = 'Depositing...';
+    var depositData = '0xb6b55f25' + padUint(amount); // deposit(uint256)
+    var txHash = await walletProvider.request({ method: 'eth_sendTransaction', params: [{ from: connectedAccount, to: vault, data: depositData }] });
+    res.innerHTML = 'Deposited. TX: <a href="https://basescan.org/tx/' + txHash + '" target="_blank" style="color:var(--gold)">' + txHash.slice(0,14) + '...</a>';
+    input.value = '';
+    setTimeout(fetchVaults, 6000);
+  } catch(e) { res.innerHTML = '<span style="color:var(--red)">Failed: ' + (e.message||e) + '</span>'; }
+}
+
+// Withdraw entire position: read raTOKEN balance, then withdraw(shares).
+async function withdrawFromVault(vault, decimals) {
+  var res = document.getElementById('vres_' + vault);
+  res.style.display = 'block';
+  if (!connectedAccount || !walletProvider) { res.innerHTML = '<span style="color:var(--red)">Connect your wallet first.</span>'; return; }
+  try {
+    res.innerHTML = 'Reading position...';
+    var balHex = await ethCall(vault, '0x70a08231' + padAddr(connectedAccount)); // balanceOf
+    var shares = BigInt(balHex);
+    if (shares <= 0n) { res.innerHTML = 'No position to withdraw.'; return; }
+    res.innerHTML = 'Withdrawing...';
+    var withdrawData = '0x2e1a7d4d' + padUint(shares); // withdraw(uint256)
+    var txHash = await walletProvider.request({ method: 'eth_sendTransaction', params: [{ from: connectedAccount, to: vault, data: withdrawData }] });
+    res.innerHTML = 'Withdrawn. TX: <a href="https://basescan.org/tx/' + txHash + '" target="_blank" style="color:var(--gold)">' + txHash.slice(0,14) + '...</a>';
+    setTimeout(fetchVaults, 6000);
+  } catch(e) { res.innerHTML = '<span style="color:var(--red)">Failed: ' + (e.message||e) + '</span>'; }
 }
 
 // ── Create Vault (owner) / Request Vault (everyone else) ──
