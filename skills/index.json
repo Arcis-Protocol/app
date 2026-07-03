@@ -1,0 +1,71 @@
+{
+  "name": "Arcis Skill Archive",
+  "description": "Agent-ready capabilities for the Arcis treasury. Any AI agent or LLM can use these to earn yield, manage idle capital, borrow against reputation, and discover vaults on Base mainnet.",
+  "version": "1.0.0",
+  "publisher": "Arcis Protocol",
+  "url": "https://arcis.money/skills",
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": { "name": "Base", "chainId": 8453 },
+  "access": {
+    "mcp": "https://mcp.arcis.money/mcp",
+    "sdk": "@arcisprotocol/sdk",
+    "cli": "@arcisprotocol/cli",
+    "rest": "https://mcp.arcis.money/api/vault"
+  },
+  "skills": [
+    {
+      "id": "earn-yield-idle-usdc",
+      "name": "Earn Yield on Idle USDC",
+      "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
+      "category": "yield",
+      "url": "https://arcis.money/skills/earn-yield-idle-usdc.json",
+      "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks.",
+      "tags": ["yield", "idle-capital", "usdc", "deposit", "treasury"]
+    },
+    {
+      "id": "auto-manage-treasury",
+      "name": "Auto-Manage Agent Treasury",
+      "summary": "Continuously sweep idle USDC above a reserve floor into yield, and pull funds back when the agent needs to spend. Set-and-forget.",
+      "category": "treasury",
+      "url": "https://arcis.money/skills/auto-manage-treasury.json",
+      "when_to_use": "The agent earns and spends USDC over time and wants idle balances to always be productive without manual action.",
+      "tags": ["treasury", "idle-capital", "automation", "yield"]
+    },
+    {
+      "id": "check-treasury-position",
+      "name": "Check Treasury Position",
+      "summary": "Read an agent's vault position, current value, and the live vault APY.",
+      "category": "read",
+      "url": "https://arcis.money/skills/check-treasury-position.json",
+      "when_to_use": "The agent or its operator wants to know how much is deposited and what it's earning.",
+      "tags": ["read", "position", "balance", "apy"]
+    },
+    {
+      "id": "borrow-against-position",
+      "name": "Borrow Against Position and Reputation",
+      "summary": "Open a credit line against a vault position, at rates set by ERC-8004 reputation tier. Access liquidity without withdrawing.",
+      "category": "credit",
+      "url": "https://arcis.money/skills/borrow-against-position.json",
+      "when_to_use": "The agent needs spending liquidity but wants to keep its yield-earning position intact.",
+      "tags": ["credit", "borrow", "reputation", "erc-8004", "collateral"]
+    },
+    {
+      "id": "discover-agent-vaults",
+      "name": "Discover Agent-Token Vaults",
+      "summary": "List every agent-token vault in the Arcis factory registry, or find the vault for a specific token.",
+      "category": "read",
+      "url": "https://arcis.money/skills/discover-agent-vaults.json",
+      "when_to_use": "The agent wants to find or use a vault for a specific agent token (e.g. $CUSTOS), or enumerate all available vaults.",
+      "tags": ["read", "vault-factory", "discovery", "agent-token"]
+    },
+    {
+      "id": "deposit-agent-token",
+      "name": "Deposit an Agent Token",
+      "summary": "Deposit any agent token into its Arcis vault for custody and to use as credit collateral. Receive a raTOKEN receipt.",
+      "category": "treasury",
+      "url": "https://arcis.money/skills/deposit-agent-token.json",
+      "when_to_use": "The agent holds a token that has an Arcis vault and wants custody plus the ability to borrow against it.",
+      "tags": ["treasury", "agent-token", "deposit", "collateral"]
+    }
+  ]
+}

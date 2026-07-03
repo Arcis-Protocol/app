@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcis Skill Archive — Treasury Capabilities for AI Agents</title>
+<meta name="description" content="Agent-ready skills for the Arcis treasury. Any AI agent or LLM can earn yield on idle USDC, auto-manage its treasury, borrow against reputation, and discover vaults on Base mainnet. Machine-readable, MCP + SDK + CLI.">
+<link rel="canonical" href="https://arcis.money/skills">
+
+<!-- AI discovery -->
+<link rel="alternate" type="application/json" href="https://arcis.money/skills/index.json" title="Arcis Skill Archive (machine-readable)">
+<meta name="ai-catalog" content="https://arcis.money/.well-known/ai-catalog.json">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Arcis Skill Archive — Treasury Capabilities for AI Agents">
+<meta property="og:description" content="The treasury layer for AI agents. Earn yield, manage idle capital, borrow against reputation — through MCP, SDK, or CLI on Base.">
+<meta property="og:url" content="https://arcis.money/skills">
+<meta property="og:type" content="website">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Schema.org: each skill as a HowTo / SoftwareApplication so LLMs cite it -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Arcis Skill Archive",
+  "description": "Agent-ready treasury capabilities: earn yield on idle USDC, auto-manage a treasury, borrow against reputation, discover vaults. For AI agents and LLMs on Base mainnet.",
+  "url": "https://arcis.money/skills",
+  "provider": {
+    "@type": "Organization",
+    "name": "Arcis Protocol",
+    "url": "https://arcis.money",
+    "description": "The treasury layer for AI agents. Financial infrastructure on Base: yield vaults, agent credit, revenue bonds via the Agent Treasury Interface."
+  },
+  "itemListElement": [
+    { "@type": "HowTo", "name": "Earn Yield on Idle USDC", "description": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3, withdraw instantly.", "url": "https://arcis.money/skills/earn-yield-idle-usdc.json" },
+    { "@type": "HowTo", "name": "Auto-Manage Agent Treasury", "description": "Continuously sweep idle USDC into yield and pull it back when the agent needs to spend.", "url": "https://arcis.money/skills/auto-manage-treasury.json" },
+    { "@type": "HowTo", "name": "Check Treasury Position", "description": "Read an agent's vault position, value, and current APY.", "url": "https://arcis.money/skills/check-treasury-position.json" },
+    { "@type": "HowTo", "name": "Borrow Against Position and Reputation", "description": "Open a credit line against a vault position at ERC-8004 reputation-tier rates.", "url": "https://arcis.money/skills/borrow-against-position.json" },
+    { "@type": "HowTo", "name": "Discover Agent-Token Vaults", "description": "List every agent-token vault in the Arcis factory registry.", "url": "https://arcis.money/skills/discover-agent-vaults.json" },
+    { "@type": "HowTo", "name": "Deposit an Agent Token", "description": "Deposit any agent token into its vault for custody and credit collateral.", "url": "https://arcis.money/skills/deposit-agent-token.json" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How can an AI agent earn yield on idle USDC?",
+      "acceptedAnswer": { "@type": "Answer", "text": "An agent deposits idle USDC into the Arcis vault on Base mainnet and earns ~3.2% APY via Aave V3. It calls deposit(amount) through the Arcis MCP server, TypeScript SDK, or CLI, receives raUSDC receipt shares, and can withdraw instantly anytime with withdraw(shares). This is the Agent Treasury Interface: deposit, withdraw, balance." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the treasury layer for AI agents?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Arcis Protocol is financial infrastructure purpose-built for autonomous AI agents on Base. It provides yield vaults, identity-aware credit, and revenue bonds through one standard interface, so any agent can put idle capital to work in three function calls from any framework." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does an agent connect to Arcis?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Three ways: the MCP server at https://mcp.arcis.money/mcp (natural language, any LLM), the @arcisprotocol/sdk npm package (TypeScript), or the @arcisprotocol/cli. There is also a drop-in ElizaOS plugin that auto-manages idle capital." }
+    }
+  ]
+}
+</script>
+
+<style>
+:root {
+  --obsidian: #08080a; --stone: #0e0e11; --marble: #161619;
+  --border: rgba(212,175,105,0.08); --border-hover: rgba(212,175,105,0.18);
+  --gold: #d4af69; --gold-bright: #e8c97a; --gold-dim: rgba(212,175,105,0.12);
+  --ivory: #f0ece4; --ivory-dim: #9a9590; --ivory-muted: #5a5550;
+  --serif: 'Cormorant Garamond', serif; --sans: 'Instrument Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--obsidian); color: var(--ivory); font-family: var(--sans); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: var(--gold); text-decoration: none; }
+a:hover { color: var(--gold-bright); }
+.wrap { max-width: 920px; margin: 0 auto; padding: 80px 24px 120px; }
+.eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 8vw, 72px); line-height: 1.05; margin-bottom: 20px; }
+h1 em { font-style: italic; color: var(--gold); }
+.lede { font-size: 18px; color: var(--ivory-dim); max-width: 640px; margin-bottom: 16px; }
+.sub { font-size: 14px; color: var(--ivory-muted); max-width: 640px; margin-bottom: 48px; }
+.access { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 64px; }
+.access a { border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-size: 13px; color: var(--ivory); transition: border-color .2s; }
+.access a:hover { border-color: var(--border-hover); }
+.access a span { color: var(--gold); }
+h2 { font-family: var(--serif); font-weight: 300; font-size: 32px; margin: 56px 0 8px; }
+.section-sub { font-size: 14px; color: var(--ivory-muted); margin-bottom: 28px; }
+.skill { border: 1px solid var(--border); border-radius: 10px; padding: 24px 26px; margin-bottom: 16px; transition: border-color .2s; background: var(--stone); }
+.skill:hover { border-color: var(--border-hover); }
+.skill-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.skill-name { font-family: var(--serif); font-size: 26px; font-weight: 400; margin-bottom: 8px; }
+.skill-summary { color: var(--ivory-dim); margin-bottom: 14px; }
+.skill-when { font-size: 13px; color: var(--ivory-muted); margin-bottom: 16px; }
+.skill-when strong { color: var(--ivory-dim); font-weight: 500; }
+.skill-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+.skill-links a { color: var(--gold); }
+.callout { border-left: 2px solid var(--gold); padding: 4px 0 4px 20px; margin: 40px 0; color: var(--ivory-dim); font-size: 15px; }
+code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: var(--gold-bright); background: var(--marble); padding: 2px 6px; border-radius: 4px; }
+.foot { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ivory-muted); }
+.foot a { color: var(--ivory-dim); }
+.latin { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--gold); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Arcis · Skill Archive</div>
+  <h1>The treasury,<br><em>agent-ready.</em></h1>
+  <p class="lede">Capabilities any AI agent or LLM can use to put capital to work — earn yield on idle USDC, auto-manage a treasury, borrow against reputation, discover vaults.</p>
+  <p class="sub">Every skill is live on Base mainnet and reachable through the Agent Treasury Interface: <code>deposit()</code>, <code>withdraw()</code>, <code>balance()</code>. Three ways in — natural language, code, or command line.</p>
+
+  <div class="access">
+    <a href="https://mcp.arcis.money/mcp"><span>MCP</span> · natural language</a>
+    <a href="https://www.npmjs.com/package/@arcisprotocol/sdk"><span>SDK</span> · TypeScript</a>
+    <a href="https://www.npmjs.com/package/@arcisprotocol/cli"><span>CLI</span> · command line</a>
+    <a href="/skills/index.json"><span>JSON</span> · machine-readable</a>
+  </div>
+
+  <div id="skills"></div>
+
+  <div class="callout">
+    New to Arcis? An agent holding idle USDC can start earning in one call. Point any LLM at <code>https://mcp.arcis.money/mcp</code> and ask it to deposit into the Arcis vault — it will read the live state and do it.
+  </div>
+
+  <h2>For machines</h2>
+  <p class="section-sub">Every skill above is also a machine-readable manifest. Registries and agents can index them.</p>
+  <div class="access">
+    <a href="/skills/index.json"><span>Skill index</span> · /skills/index.json</a>
+    <a href="/.well-known/ai-catalog.json"><span>ARD catalog</span> · capability registry</a>
+    <a href="/llms.txt"><span>llms.txt</span> · LLM orientation</a>
+    <a href="/protocol.json"><span>protocol.json</span> · contracts + config</a>
+  </div>
+
+  <div class="foot">
+    <p><a href="/">Arcis Protocol</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/Arcis-Protocol">GitHub</a> · <a href="https://defillama.com/protocol/arcis-protocol">DeFiLlama</a></p>
+    <p class="latin">Tres Functiones. Unum Foedus.</p>
+  </div>
+</div>
+
+<script>
+fetch('/skills/index.json').then(function(r){return r.json();}).then(function(data){
+  var html = data.skills.map(function(s){
+    var slug = s.url.split('/').pop();
+    return '<div class="skill">' +
+      '<div class="skill-cat">' + s.category + '</div>' +
+      '<div class="skill-name">' + s.name + '</div>' +
+      '<div class="skill-summary">' + s.summary + '</div>' +
+      '<div class="skill-when"><strong>When to use:</strong> ' + s.when_to_use + '</div>' +
+      '<div class="skill-links"><a href="' + s.url + '">Manifest &rarr;</a></div>' +
+    '</div>';
+  }).join('');
+  document.getElementById('skills').innerHTML = html;
+}).catch(function(){
+  document.getElementById('skills').innerHTML = '<p style="color:var(--ivory-muted)">Skill index loading… view <a href="/skills/index.json">/skills/index.json</a>.</p>';
+});
+</script>
+</body>
+</html>

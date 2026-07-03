@@ -1,0 +1,52 @@
+{
+  "id": "auto-manage-treasury",
+  "schema": "arcis-skill/1.0",
+  "name": "Auto-Manage Agent Treasury",
+  "summary": "Continuously sweep idle USDC above a reserve floor into yield, and pull funds back when the agent needs to spend.",
+  "category": "treasury",
+  "when_to_use": "The agent earns and spends USDC over time and wants idle balances to always be productive without manual action. Runs as a background loop.",
+  "inputs": [
+    {
+      "name": "depositThreshold",
+      "type": "uint256",
+      "description": "Deposit idle USDC above this amount"
+    },
+    {
+      "name": "reserveMinimum",
+      "type": "uint256",
+      "description": "Keep this much liquid for spending"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "status",
+      "type": "object",
+      "description": "Ongoing deposit/withdraw events as balances cross thresholds"
+    }
+  ],
+  "invocation": {
+    "sdk": {
+      "package": "@arcisprotocol/sdk",
+      "code": "import { IdleCapitalManager, BASE_CONFIG } from '@arcisprotocol/sdk';\nconst mgr = new IdleCapitalManager(BASE_CONFIG, pub, wallet, { depositThreshold: parseUnits('100',6), reserveMinimum: parseUnits('20',6) });\nmgr.start();"
+    },
+    "eliza": {
+      "plugin": "@arcisprotocol/eliza-plugin-arcis",
+      "hint": "Add the plugin to your character; the ArcisTreasuryService runs this automatically."
+    }
+  },
+  "returns_yield": "~3.2% APY on the swept portion",
+  "risk": "Same as the underlying vault. Reserve floor guarantees spending liquidity.",
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
+  "publisher": "Arcis Protocol",
+  "contracts": {
+    "vault": "0x00325d9da832b38179ed2f0dabd4062d93e325a7",
+    "factory": "0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC",
+    "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+}

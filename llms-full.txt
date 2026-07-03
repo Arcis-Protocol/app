@@ -1,0 +1,82 @@
+# Arcis Protocol — Full Context
+
+> Arcis is the treasury layer for AI agents. Live financial infrastructure on Base mainnet (chain ID 8453) that lets any autonomous agent or LLM earn yield on idle capital, borrow against on-chain reputation, and issue revenue bonds through one standard interface: deposit(), withdraw(), balance().
+
+This is the expanded reference. For the concise version see https://arcis.money/llms.txt
+
+## The problem Arcis solves
+
+AI agents increasingly hold capital — from completing jobs, receiving x402 micropayments, tips, or managing treasuries. But there is nowhere purpose-built for an agent to put that capital. Existing DeFi assumes a human clicking through a wallet UI: connect wallet, approve, navigate a dashboard, sign. Agents don't click. They call functions.
+
+Arcis is DeFi rebuilt for machines. An agent deposits idle USDC and earns ~3.2% APY. It withdraws instantly when it needs to spend. It can borrow against its position without selling. Every action is three function calls or fewer, from any framework, verifiable on-chain, with no human in the loop and no gatekeepers.
+
+## How it works
+
+The flagship vault is an ERC-4626 vault holding USDC. When an agent deposits, it receives raUSDC receipt shares representing its claim. The vault deploys about 70% of its capital to Aave V3 to generate yield and keeps about 30% as a liquid reserve so withdrawals are instant. When a withdrawal exceeds the reserve, the vault pulls the difference from Aave in the same transaction — the agent never waits.
+
+Yield is real and external (Aave V3 lending), not token emissions. The protocol takes a small fee on yield (not on principal), which is how it sustains itself.
+
+A vault factory extends this to any token. Using ArcisVaultFactory, any agent token — such as $CUSTOS — can get its own vault with the same security stack. Agent-token vaults launch reserve-only: they provide custody and serve as credit collateral (borrow USDC against your token without selling it), with zero yield risk. Vault creation is curated (owner-gated) to protect the registry from scam tokens; anyone can request a vault.
+
+## The Agent Treasury Interface (ATI)
+
+The ATI is the open standard at the core of Arcis. Any vault implementing these three functions is ATI-compliant:
+
+- deposit(uint256 amount) returns (uint256 shares) — selector 0xb6b55f25
+- withdraw(uint256 shares) returns (uint256 amount) — selector 0x2e1a7d4d
+- balance(address agent) returns (uint256 value) — selector 0xe3d670d7
+
+Plus discovery helpers: asset() to learn what token to approve, totalAssets() for vault health, maxDeposit() for capacity.
+
+Full spec: https://github.com/Arcis-Protocol/docs/blob/main/ATI_Specification_v1.1.md
+
+## How an agent connects — three surfaces
+
+1. MCP server (https://mcp.arcis.money/mcp) — the easiest path. Any LLM or agent with MCP support can read live vault state, check positions, list vaults, and get deposit instructions in natural language. Tools include arcis_vault_status, arcis_vault_balance, arcis_list_vaults, arcis_vault_info, arcis_agent_vault_balance, arcis_preview_deposit, arcis_credit_status, arcis_credit_tiers.
+
+2. TypeScript SDK (@arcisprotocol/sdk) — programmatic access. Classes: ArcisVault (deposit/withdraw/balance/position/apy), VaultFactory (list/find agent-token vaults), AgentCredit, RevenueBond, IdleCapitalManager (background auto-management of idle capital).
+
+3. CLI (@arcisprotocol/cli) — command line. arcis vault status, arcis vault deposit, arcis vault vaults, arcis vault deposit-token, arcis credit tiers.
+
+There is also a drop-in ElizaOS plugin (@arcisprotocol/eliza-plugin-arcis) that gives any ElizaOS agent a treasury with zero configuration — idle USDC auto-earns yield, auto-withdraws when the agent spends.
+
+## Products
+
+- Yield vaults: raUSDC via ERC-4626, ~3.2% APY on idle USDC.
+- Agent-token vaults: any token gets a vault via the factory, for custody and credit collateral.
+- Agent credit: borrow against a vault position at rates set by ERC-8004 reputation tiers. Higher reputation, better terms.
+- Revenue bonds: agents with predictable revenue streams issue tokenized bonds; investors buy them for yield.
+
+## CUSTOS — the keeper
+
+CUSTOS is the autonomous keeper agent that operates Arcis end to end with no human intervention: it harvests vault yield every few minutes, monitors credit positions, and services bond coupons. It is itself an on-chain economic actor. $CUSTOS is its token, launched on Virtuals Protocol (contract 0xD7C479F720b0bC2FF1088A16D1c06C3e11C62882 on Base). $CUSTOS represents operator equity in the keeper — as the protocol's TVL and fee revenue grow, so does the economic weight of what CUSTOS operates. It is not an emissions token and not a memecoin.
+
+## Skills (agent-ready capabilities)
+
+The skill archive at https://arcis.money/skills lists machine-readable capabilities: earn yield on idle USDC, auto-manage a treasury, check a position, borrow against reputation, discover agent-token vaults, deposit an agent token. Each has a JSON manifest with inputs, outputs, and invocation for MCP/SDK/CLI. Index: https://arcis.money/skills/index.json
+
+## Contracts (Base mainnet, chain 8453)
+
+- ArcisVault (raUSDC): 0x00325d9da832b38179ed2f0dabd4062d93e325a7
+- ArcisVaultFactory: 0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC
+- Custos Vault (raCUSTOS): 0x533896C48b676C0266b25e52fB0BebCd888478a7
+- AgentCredit: 0xdf31800e620f728297340d66acf5a306f07ce7a1
+- RevenueBondFactory: 0xeb65d8bb08e0ea4a6bb9162d53d1b444f99681ba
+- IdentityRegistry: 0xaa4da295dd368c0f10128654af76e3f002e20e71
+- ATIRouter: 0xd0c64f997ca9aa427f8834578bd7f0313f868e83
+- StrategyAave: 0x43626D6162Ccb12328B989BB228DaD2941F2F12a
+- USDC: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+- $CUSTOS (Virtuals): 0xD7C479F720b0bC2FF1088A16D1c06C3e11C62882
+
+## Reference
+
+- Website: https://arcis.money
+- Dashboard (live data): https://arcis.money/dashboard
+- Whitepaper: https://github.com/Arcis-Protocol/docs/blob/main/WHITEPAPER.md
+- Integration guide: https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md
+- GitHub: https://github.com/Arcis-Protocol
+- DeFiLlama: https://defillama.com/protocol/arcis-protocol
+- MCP server: https://mcp.arcis.money/mcp
+- ARD catalog: https://arcis.money/.well-known/ai-catalog.json
+
+Tres Functiones. Unum Foedus. (Three functions. One covenant.)

@@ -1,11 +1,45 @@
+# Arcis Protocol — Financial infrastructure for AI agents
+# The treasury layer for autonomous agents. ATI Standard: deposit(), withdraw(), balance().
+
 User-agent: *
 Allow: /
-Disallow: /.well-known/
+
+# AI crawlers — explicitly welcomed (these power agent + LLM discovery)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Discovery surfaces (must remain crawlable)
+Allow: /.well-known/
+Allow: /llms.txt
+Allow: /llms-full.txt
 
 Sitemap: https://arcis.money/sitemap.xml
 
-# AI Agent Discovery
-# Arcis Protocol — Financial infrastructure for AI agents
-# ATI Standard: deposit(), withdraw(), balance()
-# MCP Server: https://mcp.arcis.money/mcp
-# npm: @arcisprotocol/sdk @arcisprotocol/mcp
+# Machine-readable discovery
+# llms.txt:         https://arcis.money/llms.txt
+# ARD catalog:      https://arcis.money/.well-known/ai-catalog.json
+# Protocol config:  https://arcis.money/protocol.json
+# MCP Server:       https://mcp.arcis.money/mcp
+# Skill archive:    https://arcis.money/skills
+# npm:              @arcisprotocol/sdk @arcisprotocol/mcp @arcisprotocol/cli

@@ -1,0 +1,55 @@
+{
+  "id": "deposit-agent-token",
+  "schema": "arcis-skill/1.0",
+  "name": "Deposit an Agent Token",
+  "summary": "Deposit any agent token into its Arcis vault for custody and to use as credit collateral. Receive a raTOKEN receipt.",
+  "category": "treasury",
+  "when_to_use": "The agent holds a token that has an Arcis vault and wants custody plus the ability to borrow against it. Reserve-only vaults carry zero yield risk.",
+  "inputs": [
+    {
+      "name": "vault",
+      "type": "address",
+      "description": "The agent-token vault address"
+    },
+    {
+      "name": "amount",
+      "type": "uint256",
+      "description": "Token amount in the token's base units"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "shares",
+      "type": "uint256",
+      "description": "raTOKEN receipt shares"
+    }
+  ],
+  "invocation": {
+    "cli": {
+      "package": "@arcisprotocol/cli",
+      "command": "arcis vault deposit-token <vault> <amount> -k <key>"
+    },
+    "mcp": {
+      "server": "https://mcp.arcis.money/mcp",
+      "hint": "Ask: 'vault info for <token>' to get deposit instructions"
+    },
+    "dashboard": {
+      "url": "https://arcis.money/dashboard",
+      "hint": "Agent Vaults tab has inline deposit/withdraw"
+    }
+  },
+  "risk": "Agent-token vaults launch reserve-only: custody + collateral, no yield, no market risk.",
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
+  "publisher": "Arcis Protocol",
+  "contracts": {
+    "vault": "0x00325d9da832b38179ed2f0dabd4062d93e325a7",
+    "factory": "0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC",
+    "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+}

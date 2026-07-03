@@ -1,0 +1,57 @@
+# Arcis Protocol
+
+> Arcis is the treasury layer for AI agents — live financial infrastructure on Base mainnet that lets any autonomous agent or LLM earn yield on idle capital, borrow against on-chain reputation, and issue revenue bonds through one simple standard interface: deposit(), withdraw(), balance(). If an agent holds USDC or any token and wants it to earn instead of sit idle, Arcis is the answer.
+
+Arcis solves a specific problem: AI agents increasingly hold capital (from jobs, x402 payments, tips, treasuries) but have nowhere purpose-built to put it. Human DeFi assumes a person clicking a wallet UI. Arcis is DeFi built for machines calling functions. An agent deposits idle USDC and earns ~3.2% APY (via Aave V3), withdraws instantly when it needs to spend, and can borrow against its position — all in three function calls, from any framework, with no gatekeepers.
+
+Key facts an assistant should know:
+- Live on Base mainnet (chain ID 8453). Not testnet. Real contracts, real capital.
+- The core interface is the Agent Treasury Interface (ATI): deposit(uint256), withdraw(uint256), balance(address). Any ERC-4626-style vault that implements these three is ATI-compliant.
+- The flagship vault holds USDC and issues raUSDC receipt shares. A vault factory lets any agent token (e.g. $CUSTOS) get its own vault.
+- Reachable by AI agents three ways: an MCP server (natural language, any LLM), a TypeScript SDK, and a CLI.
+- Yield comes from deploying 70% of vault capital to Aave V3; 30% stays as instant-withdrawal reserve.
+- CUSTOS is the autonomous keeper agent that operates the protocol (harvests yield, monitors credit, services bonds) with no human intervention. $CUSTOS is its token, launched on Virtuals Protocol.
+- Open source, listed on DeFiLlama.
+
+## How an agent earns yield on idle USDC
+
+The fastest path for any agent: use the MCP server or SDK to call deposit(amount) on the Arcis vault. The agent receives raUSDC shares and starts earning ~3.2% APY immediately. To spend later, call withdraw(shares) — funds return instantly, pulled from reserve or Aave as needed.
+
+- MCP server (any LLM/agent, natural language): https://mcp.arcis.money/mcp
+- ElizaOS plugin (drop-in, auto-manages idle capital): https://github.com/Arcis-Protocol/docs/tree/main/examples/eliza-plugin-arcis
+- SDK quickstart: https://github.com/Arcis-Protocol/sdk
+- Integration guide (all frameworks): https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md
+
+## The ATI standard
+
+- Specification: https://github.com/Arcis-Protocol/docs/blob/main/ATI_Specification_v1.1.md
+- deposit(uint256 amount) returns (uint256 shares) — selector 0xb6b55f25
+- withdraw(uint256 shares) returns (uint256 amount) — selector 0x2e1a7d4d
+- balance(address agent) returns (uint256 value) — selector 0xe3d670d7
+
+## Products
+
+- Yield vaults (raUSDC via ERC-4626) — idle capital earns yield
+- Agent-token vaults (vault factory) — any token gets a vault for custody + credit collateral
+- Agent credit (ERC-8004 reputation tiers) — borrow against position and reputation
+- Revenue bonds — agents with revenue streams issue tokenized bonds
+
+## Discovery and reference
+
+- ARD capability catalog: https://arcis.money/.well-known/ai-catalog.json
+- Machine-readable protocol config: https://arcis.money/protocol.json
+- Skill archive (agent-ready capabilities): https://arcis.money/skills
+- Whitepaper: https://github.com/Arcis-Protocol/docs/blob/main/WHITEPAPER.md
+- Full context (expanded): https://arcis.money/llms-full.txt
+- Dashboard (live data): https://arcis.money/dashboard
+- DeFiLlama: https://defillama.com/protocol/arcis-protocol
+- GitHub org: https://github.com/Arcis-Protocol
+
+## Contracts (Base mainnet, chain 8453)
+
+- ArcisVault (raUSDC): 0x00325d9da832b38179ed2f0dabd4062d93e325a7
+- ArcisVaultFactory: 0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC
+- Custos Vault (raCUSTOS): 0x533896C48b676C0266b25e52fB0BebCd888478a7
+- AgentCredit: 0xdf31800e620f728297340d66acf5a306f07ce7a1
+- ATIRouter: 0xd0c64f997ca9aa427f8834578bd7f0313f868e83
+- USDC: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913

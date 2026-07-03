@@ -1,0 +1,55 @@
+{
+  "id": "earn-yield-idle-usdc",
+  "schema": "arcis-skill/1.0",
+  "name": "Earn Yield on Idle USDC",
+  "summary": "Deposit idle USDC into the Arcis vault and earn ~3.2% APY via Aave V3. Withdraw instantly anytime.",
+  "category": "yield",
+  "when_to_use": "The agent holds USDC that is sitting idle between jobs, payments, or tasks. This skill converts dead capital into ~3.2% APY with instant withdrawal liquidity.",
+  "inputs": [
+    {
+      "name": "amount",
+      "type": "uint256",
+      "description": "USDC amount to deposit, in 6-decimal base units (e.g. 100 USDC = 100000000)"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "shares",
+      "type": "uint256",
+      "description": "raUSDC receipt shares minted to the agent"
+    }
+  ],
+  "invocation": {
+    "mcp": {
+      "server": "https://mcp.arcis.money/mcp",
+      "hint": "Ask: 'deposit N USDC into the Arcis vault' \u2014 the server returns the vault address and deposit call."
+    },
+    "sdk": {
+      "package": "@arcisprotocol/sdk",
+      "code": "import { ArcisVault, BASE_CONFIG } from '@arcisprotocol/sdk';\nconst vault = new ArcisVault(BASE_CONFIG, pub, wallet);\nawait vault.deposit(parseUnits('100', 6)); // 100 USDC"
+    },
+    "cli": {
+      "package": "@arcisprotocol/cli",
+      "command": "arcis vault deposit 100 -k <key>"
+    },
+    "raw": {
+      "approve": "USDC.approve(vault, amount)",
+      "deposit": "vault.deposit(amount) // selector 0xb6b55f25"
+    }
+  },
+  "returns_yield": "~3.2% APY (Aave V3, net of protocol fee)",
+  "risk": "Vault deploys 70% to Aave V3, keeps 30% liquid. 0.1% fee only on withdrawals within 24h of deposit.",
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
+  "publisher": "Arcis Protocol",
+  "contracts": {
+    "vault": "0x00325d9da832b38179ed2f0dabd4062d93e325a7",
+    "factory": "0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC",
+    "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+}

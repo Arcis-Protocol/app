@@ -1,0 +1,46 @@
+{
+  "id": "borrow-against-position",
+  "schema": "arcis-skill/1.0",
+  "name": "Borrow Against Position and Reputation",
+  "summary": "Open a credit line against a vault position, at rates set by ERC-8004 reputation tier.",
+  "category": "credit",
+  "when_to_use": "The agent needs spending liquidity but wants to keep its yield-earning position intact. Higher reputation = better rates and collateral ratios.",
+  "inputs": [
+    {
+      "name": "amount",
+      "type": "uint256",
+      "description": "USDC to borrow"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "loanId",
+      "type": "uint256",
+      "description": "The opened loan identifier"
+    }
+  ],
+  "invocation": {
+    "mcp": {
+      "server": "https://mcp.arcis.money/mcp",
+      "hint": "Ask: 'show Arcis credit tiers' or 'check loan health for loan N'"
+    },
+    "cli": {
+      "package": "@arcisprotocol/cli",
+      "command": "arcis credit tiers   # see rates by reputation tier"
+    }
+  },
+  "risk": "Collateralized borrowing. Health factor must stay above liquidation threshold. Rates and collateral ratios improve with ERC-8004 reputation tier.",
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
+  "publisher": "Arcis Protocol",
+  "contracts": {
+    "vault": "0x00325d9da832b38179ed2f0dabd4062d93e325a7",
+    "factory": "0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC",
+    "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+}

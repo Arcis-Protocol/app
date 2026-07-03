@@ -1,0 +1,52 @@
+{
+  "id": "discover-agent-vaults",
+  "schema": "arcis-skill/1.0",
+  "name": "Discover Agent-Token Vaults",
+  "summary": "List every agent-token vault in the Arcis factory registry, or find the vault for a specific token.",
+  "category": "read",
+  "when_to_use": "The agent wants to find or use a vault for a specific agent token, or enumerate all available vaults. Read-only.",
+  "inputs": [
+    {
+      "name": "asset",
+      "type": "address",
+      "description": "Optional: a token address to find its vault"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "vaults",
+      "type": "array",
+      "description": "Vault entries: address, asset, name, symbol, TVL, status"
+    }
+  ],
+  "invocation": {
+    "mcp": {
+      "server": "https://mcp.arcis.money/mcp",
+      "hint": "Ask: 'list agent-token vaults on Arcis'"
+    },
+    "cli": {
+      "package": "@arcisprotocol/cli",
+      "command": "arcis vault vaults"
+    },
+    "sdk": {
+      "package": "@arcisprotocol/sdk",
+      "code": "import { VaultFactory, BASE_CONFIG } from '@arcisprotocol/sdk';\nconst f = new VaultFactory(BASE_CONFIG, pub);\nconst vaults = await f.listVaults();"
+    },
+    "rest": {
+      "url": "https://mcp.arcis.money/api/vaults"
+    }
+  },
+  "protocol": "Agent Treasury Interface (ATI)",
+  "network": {
+    "name": "Base",
+    "chainId": 8453
+  },
+  "publisher": "Arcis Protocol",
+  "contracts": {
+    "vault": "0x00325d9da832b38179ed2f0dabd4062d93e325a7",
+    "factory": "0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC",
+    "credit": "0xdf31800e620f728297340d66acf5a306f07ce7a1",
+    "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "docs": "https://github.com/Arcis-Protocol/docs/blob/main/INTEGRATION.md"
+}
