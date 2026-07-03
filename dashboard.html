@@ -339,6 +339,8 @@ a:hover { color: var(--ivory); }
 
 ## Contracts
 - ArcisVault (raUSDC): 0x00325d9da832b38179ed2f0dabd4062d93e325a7
+- ArcisVaultFactory: 0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC
+- Custos Vault (raCUSTOS): 0x533896C48b676C0266b25e52fB0BebCd888478a7
 - StrategyAave: 0x43626D6162Ccb12328B989BB228DaD2941F2F12a
 - AgentCredit: 0xdf31800e620f728297340d66acf5a306f07ce7a1
 - RevenueBondFactory: 0xeb65d8bb08e0ea4a6bb9162d53d1b444f99681ba
@@ -639,6 +641,8 @@ TWAK (Trust Wallet), Coinbase Agentic Wallets, elizaOS, LangChain, CrewAI, any v
     <div class="lookup-box">
       <div class="stat-label" style="margin-bottom:16px">DEPLOYED CONTRACTS — BASE MAINNET</div>
       <div class="contract-row"><div><span class="contract-name">ArcisVault</span><span class="contract-tag">raUSDC</span></div><a class="contract-addr" href="https://basescan.org/address/0x00325d9da832b38179ed2f0dabd4062d93e325a7" target="_blank">0x0032...25a7 ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">ArcisVaultFactory</span><span class="contract-tag">FACTORY</span></div><a class="contract-addr" href="https://basescan.org/address/0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC" target="_blank">0x9f56...0FBC ↗</a></div>
+      <div class="contract-row"><div><span class="contract-name">Custos Vault</span><span class="contract-tag">raCUSTOS</span></div><a class="contract-addr" href="https://basescan.org/address/0x533896C48b676C0266b25e52fB0BebCd888478a7" target="_blank">0x5338...78a7 ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">ATIRouter</span><span class="contract-tag">ENTRY POINT</span></div><a class="contract-addr" href="https://basescan.org/address/0xd0c64f997ca9aa427f8834578bd7f0313f868e83" target="_blank">0xd0c6...8e83 ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">StrategyAave</span><span class="contract-tag">YIELD</span></div><a class="contract-addr" href="https://basescan.org/address/0x43626D6162Ccb12328B989BB228DaD2941F2F12a" target="_blank">0x4362...F12a ↗</a></div>
       <div class="contract-row"><div><span class="contract-name">StrategyAllocator</span><span class="contract-tag">TIMELOCK</span></div><a class="contract-addr" href="https://basescan.org/address/0x7Fd5d7b49694858FCf143E0039e83cDB0196DD7A" target="_blank">0x7Fd5...DD7A ↗</a></div>
@@ -686,6 +690,8 @@ const USDC_ADDR = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const DEPLOYER = '0xB390c9a4fB16389B6edd468f18AB2597bdf857db';
 const FACTORY = '0x9f5697eEB94ee1C7CEDfEb2080A9398D42170FBC';
 const FACTORY_OWNER = '0x0FA8aa44683D68C760B3743fC872692c24344642';
+// TODO: set to your actual CUSTOS bot username (from BotFather, without @)
+const CUSTOS_BOT = 'custos_arcis_bot';
 
 // Function selectors (precomputed keccak256 first 4 bytes)
 const SEL = {
@@ -1042,10 +1048,10 @@ async function submitVaultRequest() {
     return;
   }
 
-  // Non-owner (or not connected): submit a request via Telegram deep link.
+  // Non-owner (or not connected): submit a request via the CUSTOS keeper bot.
   if (!isFactoryOwner()) {
-    var msg = 'Arcis vault request%0AToken: ' + asset + (name ? '%0AName: ' + name : '') + (symbol ? '%0ASymbol: ' + symbol : '');
-    result.innerHTML = 'Vault creation is curated. <a href="https://t.me/brandononchain?text=' + msg + '" target="_blank" style="color:var(--gold)">Send your request &rarr;</a> and the keeper will review it.';
+    var msg = '/requestvault ' + asset;
+    result.innerHTML = 'Vault creation is curated. <a href="https://t.me/' + CUSTOS_BOT + '?text=' + encodeURIComponent(msg) + '" target="_blank" style="color:var(--gold)">Request via the CUSTOS keeper &rarr;</a> — you\'ll be notified when it\'s reviewed.';
     return;
   }
 
