@@ -106,20 +106,10 @@ html { scroll-behavior: smooth; }
 body { background: var(--obsidian); color: var(--ivory); font-family: var(--sans); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
 a { color: var(--gold); text-decoration: none; }
 a:hover { color: var(--gold-bright); }
-.wrap { max-width: 920px; margin: 0 auto; padding: 120px 24px 120px; }
-/* ── site nav (consistent with index.html) ── */
-.site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1100; padding: 18px 0; background: rgba(8,8,10,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
-.nav-inner { max-width: 920px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ivory); }
-.nav-logo img { height: 30px; width: auto; object-fit: contain; }
-.nav-logo span { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: 0.02em; }
-.nav-links { display: flex; gap: 30px; align-items: center; }
-.nav-links a { color: var(--ivory-dim); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
-.nav-links a:hover { color: var(--gold-bright); }
-.nav-links a.current { color: var(--gold); }
-.nav-links .nav-cta { color: var(--gold); border: 1px solid var(--gold); padding: 9px 20px; border-radius: 0; font-weight: 600; transition: all .4s cubic-bezier(0.22,1,0.36,1); }
-.nav-links .nav-cta:hover { background: var(--gold); color: var(--obsidian); }
-@media (max-width: 760px) { .nav-links { gap: 16px; } .nav-links a:not(.nav-cta):not([href="/dashboard"]) { display: none; } }
+.wrap { max-width: 920px; margin: 0 auto; padding: 80px 24px 120px; }
+/* ── back to home ── */
+.back-home { position: fixed; top: 22px; right: 24px; z-index: 1100; display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--ivory-dim); text-decoration: none; padding: 8px 15px; border: 1px solid var(--border); border-radius: 6px; background: rgba(8,8,10,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: color .2s, border-color .2s; }
+.back-home:hover { color: var(--gold-bright); border-color: var(--border-hover); }
 .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
 h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 8vw, 72px); line-height: 1.05; margin-bottom: 20px; }
 h1 em { font-style: italic; color: var(--gold); }
@@ -167,20 +157,7 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 </style>
 </head>
 <body>
-<nav class="site-nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-logo"><img src="logo-nav.png" alt="Arcis"><span>Arcis</span></a>
-    <div class="nav-links">
-      <a href="/#pillars">Protocol</a>
-      <a href="/#ati">Interface</a>
-      <a href="/#architecture">Architecture</a>
-      <a href="/#custos">CUSTOS</a>
-      <a href="/skills" class="current">Skills</a>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/#waitlist" class="nav-cta">Enter the Citadel</a>
-    </div>
-  </div>
-</nav>
+<a href="/" class="back-home">← Home</a>
 <div class="wrap">
   <div class="eyebrow">Arcis · Skill Archive</div>
   <h1>The treasury,<br><em>agent-ready.</em></h1>
