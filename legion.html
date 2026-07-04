@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Legion — Arcis Ambassador Corps</title>
+<meta name="description" content="The Legion is the Arcis ambassador corps. Earned rank, outcomes over activity, rewards funded by real revenue. Apply to the Founding Legion.">
+<meta property="og:title" content="The Legion — Arcis Ambassador Corps">
+<meta property="og:description" content="Earned rank. Outcomes over activity. Rewards funded by real revenue, not emissions. Apply to the Founding Legion.">
+<meta property="og:image" content="/og.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --obsidian: #08080a; --stone: #0F0F12; --marble: #16161A;
+  --border: rgba(212,175,105,0.08); --border-hover: rgba(212,175,105,0.18);
+  --gold: #d4af69; --gold-bright: #E2C47E; --gold-dim: rgba(212,175,105,0.12);
+  --ivory: #f0ece4; --ivory-dim: #9a9590; --ivory-muted: #5a5550;
+  --serif: 'Cormorant Garamond', serif; --sans: 'Instrument Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--obsidian); color: var(--ivory); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 100px 24px 120px; }
+.back-home { position: fixed; top: 22px; right: 24px; z-index: 1100; display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--ivory-dim); text-decoration: none; padding: 8px 15px; border: 1px solid var(--border); border-radius: 6px; background: rgba(8,8,10,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: color .2s, border-color .2s; }
+.back-home:hover { color: var(--gold-bright); border-color: var(--border-hover); }
+
+.eyebrow { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(44px, 8vw, 72px); line-height: 1.02; letter-spacing: -0.01em; margin-bottom: 20px; }
+.lede { font-size: 18px; color: var(--ivory-dim); max-width: 60ch; }
+.lede strong { color: var(--ivory); font-weight: 500; }
+
+section { margin-top: 56px; }
+h2 { font-family: var(--serif); font-weight: 500; font-size: 30px; letter-spacing: -0.01em; margin-bottom: 20px; }
+
+.tiers { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.tier { background: var(--stone); padding: 16px 20px; display: flex; gap: 16px; align-items: baseline; }
+.tier .rank { font-family: var(--serif); font-size: 20px; color: var(--gold-bright); min-width: 108px; }
+.tier .desc { font-size: 15px; color: var(--ivory-dim); }
+
+.how { display: grid; gap: 14px; }
+.how li { list-style: none; padding-left: 22px; position: relative; color: var(--ivory-dim); font-size: 15.5px; }
+.how li::before { content: "▪"; position: absolute; left: 0; color: var(--gold); }
+.how li strong { color: var(--ivory); font-weight: 500; }
+
+form { margin-top: 12px; display: grid; gap: 20px; }
+.field { display: grid; gap: 7px; }
+label { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--ivory); }
+label .req { color: var(--gold); }
+label .opt { color: var(--ivory-muted); font-weight: 400; }
+input, select, textarea { width: 100%; background: var(--stone); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; color: var(--ivory); font-family: var(--sans); font-size: 15px; transition: border-color .2s, background .2s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); background: var(--marble); }
+input::placeholder, textarea::placeholder { color: var(--ivory-muted); }
+textarea { resize: vertical; min-height: 110px; }
+select { appearance: none; -webkit-appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4af69' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+.hp { position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden; }
+
+button { margin-top: 6px; background: var(--gold); color: var(--obsidian); border: none; border-radius: 6px; padding: 14px 20px; font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: 0.01em; cursor: pointer; transition: background .3s, transform .1s; }
+button:hover { background: var(--gold-bright); }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.note { font-size: 13px; color: var(--ivory-muted); margin-top: 4px; }
+#status { margin-top: 16px; font-size: 15px; padding: 14px 16px; border-radius: 6px; display: none; }
+#status.ok { display: block; background: var(--gold-dim); border: 1px solid var(--border-hover); color: var(--gold-bright); }
+#status.err { display: block; background: rgba(180,60,60,0.1); border: 1px solid rgba(180,60,60,0.3); color: #e0a0a0; }
+.latin { font-family: var(--serif); font-style: italic; color: var(--gold); font-size: 18px; margin-top: 64px; text-align: center; opacity: 0.8; }
+</style>
+</head>
+<body>
+<a href="/" class="back-home">← Home</a>
+<div class="wrap">
+
+  <div class="eyebrow">Arcis · The Legion</div>
+  <h1>The Legion</h1>
+  <p class="lede">The Arcis ambassador corps. Its purpose is not reach — it is <strong>durable ownership</strong>: real holders, real integrations, real builders who stay. One law governs it: <strong>reward ownership and outcomes, never activity.</strong> We don't pay per post. We reward proven impact.</p>
+
+  <section>
+    <h2>The ranks</h2>
+    <div class="tiers">
+      <div class="tier"><span class="rank">Citizen</span><span class="desc">Entered the Citadel — a badge, community access, and a path to climb.</span></div>
+      <div class="tier"><span class="rank">Legionary</span><span class="desc">Active contributor — revenue-reward eligibility, private channel, early access.</span></div>
+      <div class="tier"><span class="rank">Centurion</span><span class="desc">Leads a cohort — higher share, direct founder line, roadmap input.</span></div>
+      <div class="tier"><span class="rank">Praetorian</span><span class="desc">Elite, by nomination — top share, governance weight, represents Arcis.</span></div>
+      <div class="tier"><span class="rank">Consul</span><span class="desc">Inner circle — governance authority and a voice in protocol direction.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ul class="how">
+      <li><strong>Rank is earned, not bought.</strong> Ship integrations, onboard depositors, create real content, lead the community — that's what moves you up.</li>
+      <li><strong>Rewards come from real revenue.</strong> CUSTOS earns USDC; the Legion is paid from that, retroactively each quarter — not from token emissions.</li>
+      <li><strong>No farming.</strong> On-chain proof of holding and contribution, reviewed by hand. Status, access, and a share of what the protocol actually earns.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Apply to the Founding Legion</h2>
+    <p class="note" style="margin-bottom:18px;">The first cohort is small and hand-picked. Tell us what you'd actually build or bring.</p>
+    <form id="legion-form" novalidate>
+      <div class="field">
+        <label for="handle">Name / handle <span class="req">*</span></label>
+        <input id="handle" name="handle" type="text" placeholder="How you're known" required maxlength="80">
+      </div>
+      <div class="field">
+        <label for="contact">Telegram or X to reach you <span class="req">*</span></label>
+        <input id="contact" name="contact" type="text" placeholder="@yourhandle" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="track">Your track <span class="req">*</span></label>
+        <select id="track" name="track" required>
+          <option value="" disabled selected>Choose the one that fits best</option>
+          <option value="$CUSTOS holder">I hold $CUSTOS</option>
+          <option value="Agent builder (Built on Arcis)">I build agents (Built on Arcis)</option>
+          <option value="Community builder">Community builder</option>
+          <option value="Content / technical writing">Content / technical writing</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="wallet">Base wallet address <span class="opt">— optional, for holdings + rewards</span></label>
+        <input id="wallet" name="wallet" type="text" placeholder="0x…" maxlength="60">
+      </div>
+      <div class="field">
+        <label for="contribution">What will you contribute? <span class="req">*</span></label>
+        <textarea id="contribution" name="contribution" placeholder="Be concrete — an integration you'd ship, depositors you'd onboard, content you'd write, a community you'd run…" required maxlength="1500"></textarea>
+      </div>
+      <div class="field">
+        <label for="links">Links <span class="opt">— optional: X, GitHub, past work</span></label>
+        <input id="links" name="links" type="text" placeholder="Anything that shows what you've done" maxlength="400">
+      </div>
+      <!-- honeypot: hidden from humans, bots fill it -->
+      <div class="hp" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+
+      <button type="submit" id="submit-btn">Apply to the Legion</button>
+      <div id="status"></div>
+    </form>
+  </section>
+
+  <p class="latin">Tres Functiones. Unum Foedus.</p>
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('legion-form');
+  var btn = document.getElementById('submit-btn');
+  var status = document.getElementById('status');
+  function show(kind, msg) { status.className = kind; status.textContent = msg; }
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    show('', '');
+    var data = {
+      handle: form.handle.value.trim(),
+      contact: form.contact.value.trim(),
+      track: form.track.value,
+      wallet: form.wallet.value.trim(),
+      contribution: form.contribution.value.trim(),
+      links: form.links.value.trim(),
+      website: form.website.value // honeypot
+    };
+    if (!data.handle || !data.contact || !data.track || !data.contribution) {
+      show('err', 'Please fill in the required fields.');
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      var res = await fetch('/api/legion-apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      var out = await res.json().catch(function () { return {}; });
+      if (res.ok && out.ok) {
+        form.reset();
+        show('ok', 'Application received. The Legion will be in touch. 🏛️');
+        btn.textContent = 'Applied';
+      } else {
+        show('err', (out && out.error) ? out.error : 'Something went wrong. Try again in a moment.');
+        btn.disabled = false; btn.textContent = 'Apply to the Legion';
+      }
+    } catch (err) {
+      show('err', 'Network error. Please try again.');
+      btn.disabled = false; btn.textContent = 'Apply to the Legion';
+    }
+  });
+})();
+</script>
+</body>
+</html>
