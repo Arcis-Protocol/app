@@ -1,10 +1,9 @@
 // api/legion-apply.js — Legion application intake → Telegram (CUSTOS bot)
 //
-// The bot token lives ONLY in Vercel env vars, never in the page. Set in Vercel:
+// The bot token lives ONLY in Vercel env vars, never in the page. Set in Vercel
+// (copy the same two values from Railway — identical names):
 //   TELEGRAM_BOT_TOKEN  — the CUSTOS bot token
-//   LEGION_CHAT_ID      — the chat/DM/group id where applications should land
-//
-// Reuses the CUSTOS bot; LEGION_CHAT_ID can be your own DM with the bot or a group.
+//   TELEGRAM_CHAT_ID    — the chat/DM/group id where applications should land
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -33,7 +32,7 @@ module.exports = async (req, res) => {
     }
 
     const token = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.LEGION_CHAT_ID;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
     if (!token || !chatId) {
       res.status(500).json({ ok: false, error: 'Application intake is not configured yet.' });
       return;
