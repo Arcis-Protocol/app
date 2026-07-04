@@ -95,9 +95,9 @@
 
 <style>
 :root {
-  --obsidian: #08080a; --stone: #0e0e11; --marble: #161619;
+  --obsidian: #08080a; --stone: #0F0F12; --marble: #16161A;
   --border: rgba(212,175,105,0.08); --border-hover: rgba(212,175,105,0.18);
-  --gold: #d4af69; --gold-bright: #e8c97a; --gold-dim: rgba(212,175,105,0.12);
+  --gold: #d4af69; --gold-bright: #E2C47E; --gold-dim: rgba(212,175,105,0.12);
   --ivory: #f0ece4; --ivory-dim: #9a9590; --ivory-muted: #5a5550;
   --serif: 'Cormorant Garamond', serif; --sans: 'Instrument Sans', sans-serif;
 }
@@ -106,7 +106,20 @@ html { scroll-behavior: smooth; }
 body { background: var(--obsidian); color: var(--ivory); font-family: var(--sans); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
 a { color: var(--gold); text-decoration: none; }
 a:hover { color: var(--gold-bright); }
-.wrap { max-width: 920px; margin: 0 auto; padding: 80px 24px 120px; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 120px 24px 120px; }
+/* ── site nav (consistent with index.html) ── */
+.site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1100; padding: 18px 0; background: rgba(8,8,10,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
+.nav-inner { max-width: 920px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ivory); }
+.nav-logo img { height: 30px; width: auto; object-fit: contain; }
+.nav-logo span { font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: 0.02em; }
+.nav-links { display: flex; gap: 30px; align-items: center; }
+.nav-links a { color: var(--ivory-dim); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+.nav-links a:hover { color: var(--gold-bright); }
+.nav-links a.current { color: var(--gold); }
+.nav-links .nav-cta { color: var(--gold); border: 1px solid var(--gold); padding: 9px 20px; border-radius: 0; font-weight: 600; transition: all .4s cubic-bezier(0.22,1,0.36,1); }
+.nav-links .nav-cta:hover { background: var(--gold); color: var(--obsidian); }
+@media (max-width: 760px) { .nav-links { gap: 16px; } .nav-links a:not(.nav-cta):not([href="/dashboard"]) { display: none; } }
 .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
 h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 8vw, 72px); line-height: 1.05; margin-bottom: 20px; }
 h1 em { font-style: italic; color: var(--gold); }
@@ -118,7 +131,7 @@ h1 em { font-style: italic; color: var(--gold); }
 .access a span { color: var(--gold); }
 h2 { font-family: var(--serif); font-weight: 300; font-size: 32px; margin: 56px 0 8px; }
 .section-sub { font-size: 14px; color: var(--ivory-muted); margin-bottom: 28px; }
-.skill { border: 1px solid var(--border); border-radius: 10px; padding: 24px 26px; margin-bottom: 16px; transition: border-color .2s; background: var(--stone); }
+.skill { border: 1px solid var(--border); border-radius: 6px; padding: 24px 26px; margin-bottom: 16px; transition: border-color .2s; background: var(--stone); }
 .skill:hover { border-color: var(--border-hover); }
 .skill-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
 .skill-name { font-family: var(--serif); font-size: 26px; font-weight: 400; margin-bottom: 8px; }
@@ -133,7 +146,7 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 .foot a { color: var(--ivory-dim); }
 .latin { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--gold); margin-top: 8px; }
 .fw-group { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin: 28px 0 12px; }
-.logo-wall { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0 8px; }
+.logo-wall { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 20px 0 8px; }
 @media (max-width: 640px) { .logo-wall { grid-template-columns: repeat(2, 1fr); } }
 .logo-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 26px 12px; background: var(--stone); color: var(--ivory-dim); transition: color .25s, background .25s; }
 .logo-cell:hover { color: var(--gold-bright); background: var(--marble); }
@@ -141,7 +154,7 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 .logo-cell .logo-label { font-size: 11px; letter-spacing: .5px; color: var(--ivory-muted); transition: color .25s; }
 .logo-cell:hover .logo-label { color: var(--gold); }
 .logo-note { font-size: 12px; color: var(--ivory-muted); margin-bottom: 28px; }
-.fw { border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 12px; background: var(--stone); transition: border-color .2s; }
+.fw { border: 1px solid var(--border); border-radius: 6px; padding: 20px 22px; margin-bottom: 12px; background: var(--stone); transition: border-color .2s; }
 .fw:hover { border-color: var(--border-hover); }
 .fw-name { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 6px; }
 .fw-name a { color: var(--ivory); }
@@ -154,6 +167,20 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 </style>
 </head>
 <body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="logo-nav.png" alt="Arcis"><span>Arcis</span></a>
+    <div class="nav-links">
+      <a href="/#pillars">Protocol</a>
+      <a href="/#ati">Interface</a>
+      <a href="/#architecture">Architecture</a>
+      <a href="/#custos">CUSTOS</a>
+      <a href="/skills" class="current">Skills</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/#waitlist" class="nav-cta">Enter the Citadel</a>
+    </div>
+  </div>
+</nav>
 <div class="wrap">
   <div class="eyebrow">Arcis · Skill Archive</div>
   <h1>The treasury,<br><em>agent-ready.</em></h1>
