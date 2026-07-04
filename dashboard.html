@@ -104,7 +104,7 @@ a:hover { color: var(--ivory); }
 }
 .header-left img { height: 24px; width: auto; }
 .header-logo { font-family: var(--font-display); font-size: 18px; font-weight: 500; letter-spacing: 0.1em; color: var(--ivory); }
-.header-badge { font-size: 8px; color: var(--gold); border: 1px solid rgba(212,175,105,0.4); border-radius: 3px; padding: 2px 5px; letter-spacing: 0.08em; white-space: nowrap; }
+.header-badge { font-size: 8px; color: var(--gold); border: 1px solid rgba(212,175,105,0.4); border-radius: 0; padding: 2px 5px; letter-spacing: 0.08em; white-space: nowrap; }
 .header-right {
   display: flex;
   align-items: center;
@@ -146,14 +146,14 @@ a:hover { color: var(--ivory); }
 /* Capacity bar */
 .capacity-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; margin-bottom: 24px; }
 .capacity-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; }
-.capacity-track { background: var(--bg); border-radius: 4px; height: 8px; overflow: hidden; }
-.capacity-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); border-radius: 4px; transition: width 0.6s ease; }
+.capacity-track { background: var(--bg); border-radius: 0; height: 8px; overflow: hidden; }
+.capacity-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); border-radius: 0; transition: width 0.6s ease; }
 .capacity-footer { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--ivory-muted); }
 
 /* Status bar */
 .status-bar {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; border-radius: 6px;
+  padding: 10px 16px; border-radius: 0;
   font-size: 12px; margin-bottom: 24px;
 }
 .status-bar.active { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.15); color: var(--green); }
@@ -167,18 +167,18 @@ a:hover { color: var(--ivory); }
 .lookup-row { display: flex; gap: 8px; }
 .lookup-input {
   flex: 1; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 6px; padding: 10px 14px; color: var(--ivory);
+  border-radius: 0; padding: 10px 14px; color: var(--ivory);
   font-size: 13px; font-family: var(--font-mono); outline: none;
 }
 .lookup-input:focus { border-color: var(--gold); }
 .lookup-input::placeholder { color: var(--ivory-muted); }
 .lookup-btn {
-  background: var(--gold); color: var(--bg); border: none; border-radius: 6px;
+  background: var(--gold); color: var(--bg); border: none; border-radius: 0;
   padding: 10px 20px; font-size: 12px; font-weight: 600; cursor: pointer;
   letter-spacing: 0.05em; font-family: var(--font-body);
 }
 .lookup-btn:hover { background: var(--gold-bright); }
-.lookup-result { margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+.lookup-result { margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 0; border: 1px solid var(--border); }
 .lookup-result .addr { font-size: 11px; color: var(--ivory-muted); margin-bottom: 10px; font-family: var(--font-mono); word-break: break-all; }
 .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 .result-item .label { font-size: 10px; color: var(--ivory-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -191,7 +191,7 @@ a:hover { color: var(--ivory); }
   padding: 12px 0; border-bottom: 1px solid var(--border);
 }
 .contract-name { color: var(--ivory); font-size: 14px; }
-.contract-tag { font-size: 10px; color: var(--gold); border: 1px solid rgba(212,175,105,0.3); border-radius: 4px; padding: 2px 6px; letter-spacing: 0.05em; margin-left: 8px; }
+.contract-tag { font-size: 10px; color: var(--gold); border: 1px solid rgba(212,175,105,0.3); border-radius: 0; padding: 2px 6px; letter-spacing: 0.05em; margin-left: 8px; }
 .contract-addr { color: var(--ivory-muted); font-size: 13px; font-family: var(--font-mono); }
 .contract-addr:hover { color: var(--gold); }
 
@@ -208,7 +208,7 @@ a:hover { color: var(--ivory); }
 .tier-discount { color: var(--green); text-align: right; }
 
 /* ATI code block */
-.ati-block { margin-top: 20px; padding: 16px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+.ati-block { margin-top: 20px; padding: 16px; background: var(--bg); border-radius: 0; border: 1px solid var(--border); }
 .ati-block .label { font-size: 11px; color: var(--ivory-muted); margin-bottom: 8px; }
 .ati-block code { font-size: 12px; color: var(--gold); font-family: var(--font-mono); line-height: 1.8; display: block; }
 
@@ -273,7 +273,7 @@ a:hover { color: var(--ivory); }
 
 /* Wallet */
 .wallet-btn {
-  background: transparent; border: 1px solid var(--gold); border-radius: 6px;
+  background: transparent; border: 1px solid var(--gold); border-radius: 0;
   color: var(--gold); padding: 8px 16px; font-size: 11px; font-weight: 500;
   cursor: pointer; letter-spacing: 0.05em; font-family: var(--font-body);
   transition: all 0.3s;
@@ -289,24 +289,24 @@ a:hover { color: var(--ivory); }
   color: var(--ivory-muted); font-size: 12px; text-align: center; cursor: pointer;
   letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-body); transition: all 0.2s;
 }
-.action-tab:first-child { border-radius: 6px 0 0 6px; }
-.action-tab:last-child { border-radius: 0 6px 6px 0; }
+.action-tab:first-child { border-radius: 0; }
+.action-tab:last-child { border-radius: 0; }
 .action-tab.active { background: var(--gold-muted); color: var(--gold); border-color: rgba(212,175,105,0.3); }
 .action-input {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 6px; padding: 14px; color: var(--ivory); font-size: 16px;
+  border-radius: 0; padding: 14px; color: var(--ivory); font-size: 16px;
   font-family: var(--font-mono); outline: none; margin-bottom: 12px;
 }
 .action-input:focus { border-color: var(--gold); }
 .action-submit {
   width: 100%; background: var(--gold); color: var(--bg); border: none;
-  border-radius: 6px; padding: 14px; font-size: 13px; font-weight: 600;
+  border-radius: 0; padding: 14px; font-size: 13px; font-weight: 600;
   cursor: pointer; letter-spacing: 0.06em; font-family: var(--font-body);
 }
 .action-submit:hover { background: var(--gold-bright); }
 .action-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 .action-info { font-size: 11px; color: var(--ivory-muted); margin-top: 8px; text-align: center; }
-.action-result { margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 6px; border: 1px solid rgba(74,222,128,0.2); font-size: 12px; color: var(--green); display: none; }
+.action-result { margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 0; border: 1px solid rgba(74,222,128,0.2); font-size: 12px; color: var(--green); display: none; }
 
 /* Events */
 .events-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; margin-top: 24px; }
@@ -558,10 +558,10 @@ Trust Wallet, Coinbase Agentic Wallets, Coinbase AgentKit, ElizaOS, LangChain, C
         </p>
 
         <div style="display:flex;flex-direction:column;gap:10px;max-width:520px">
-          <input id="cvAsset" placeholder="Token contract address (0x...)" style="background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-family:monospace;font-size:13px" />
+          <input id="cvAsset" placeholder="Token contract address (0x...)" style="background:var(--stone);border:1px solid var(--border);border-radius: 0;padding:10px 12px;color:var(--ivory);font-family:monospace;font-size:13px" />
           <div style="display:flex;gap:10px">
-            <input id="cvName" placeholder="Vault name (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-size:13px" />
-            <input id="cvSymbol" placeholder="raSYMBOL (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--ivory);font-size:13px" />
+            <input id="cvName" placeholder="Vault name (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius: 0;padding:10px 12px;color:var(--ivory);font-size:13px" />
+            <input id="cvSymbol" placeholder="raSYMBOL (optional)" style="flex:1;background:var(--stone);border:1px solid var(--border);border-radius: 0;padding:10px 12px;color:var(--ivory);font-size:13px" />
           </div>
           <button class="action-submit" id="createVaultBtn" onclick="submitVaultRequest()">Request Vault</button>
         </div>
@@ -913,13 +913,13 @@ async function fetchVaults() {
       // Flagship USDC vault uses the dedicated deposit box above; agent vaults get inline controls.
       var controls = v.flagship ? '' : (
         '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
-          '<input id="dep_' + vid + '" placeholder="Amount" style="flex:1;min-width:100px;background:var(--obsidian);border:1px solid var(--border);border-radius:5px;padding:8px 10px;color:var(--ivory);font-size:13px" />' +
-          '<button class="vdep" data-vault="' + vid + '" data-asset="' + v.asset + '" data-dec="' + dec + '" style="background:var(--gold-muted);color:var(--gold);border:1px solid rgba(212,175,105,0.3);border-radius:5px;padding:8px 14px;font-size:13px;cursor:pointer">Deposit</button>' +
-          '<button class="vwd" data-vault="' + vid + '" data-dec="' + dec + '" style="background:var(--stone);color:var(--ivory-muted);border:1px solid var(--border);border-radius:5px;padding:8px 14px;font-size:13px;cursor:pointer">Withdraw Max</button>' +
+          '<input id="dep_' + vid + '" placeholder="Amount" style="flex:1;min-width:100px;background:var(--obsidian);border:1px solid var(--border);border-radius: 0;padding:8px 10px;color:var(--ivory);font-size:13px" />' +
+          '<button class="vdep" data-vault="' + vid + '" data-asset="' + v.asset + '" data-dec="' + dec + '" style="background:var(--gold-muted);color:var(--gold);border:1px solid rgba(212,175,105,0.3);border-radius: 0;padding:8px 14px;font-size:13px;cursor:pointer">Deposit</button>' +
+          '<button class="vwd" data-vault="' + vid + '" data-dec="' + dec + '" style="background:var(--stone);color:var(--ivory-muted);border:1px solid var(--border);border-radius: 0;padding:8px 14px;font-size:13px;cursor:pointer">Withdraw Max</button>' +
         '</div>' +
         '<div id="vres_' + vid + '" style="display:none;margin-top:8px;font-size:12px;color:var(--ivory-muted)"></div>'
       );
-      return '<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--stone)">' +
+      return '<div style="border:1px solid var(--border);border-radius: 0;padding:14px 16px;background:var(--stone)">' +
         '<div style="display:flex;justify-content:space-between;align-items:center">' +
         '<div><span style="color:var(--gold);font-weight:600">' + (v.symbol||'') + '</span>' + flag +
         '<div style="color:var(--ivory-muted);font-size:11px;margin-top:2px">' + (v.name||'') + '</div></div>' +

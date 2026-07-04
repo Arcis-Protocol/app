@@ -98,7 +98,7 @@
   --obsidian: #08080a; --stone: #0F0F12; --marble: #16161A;
   --border: rgba(212,175,105,0.08); --border-hover: rgba(212,175,105,0.18);
   --gold: #d4af69; --gold-bright: #E2C47E; --gold-dim: rgba(212,175,105,0.12);
-  --ivory: #f0ece4; --ivory-dim: #9a9590; --ivory-muted: #5a5550;
+  --ivory: #f0ece4; --ivory-dim: #9a9590; --ivory-muted: #8A8478;
   --serif: 'Cormorant Garamond', serif; --sans: 'Instrument Sans', sans-serif;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -108,7 +108,7 @@ a { color: var(--gold); text-decoration: none; }
 a:hover { color: var(--gold-bright); }
 .wrap { max-width: 920px; margin: 0 auto; padding: 80px 24px 120px; }
 /* ── back to home ── */
-.back-home { position: fixed; top: 22px; right: 24px; z-index: 1100; display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--ivory-dim); text-decoration: none; padding: 8px 15px; border: 1px solid var(--border); border-radius: 6px; background: rgba(8,8,10,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: color .2s, border-color .2s; }
+.back-home { position: fixed; top: 22px; right: 24px; z-index: 1100; display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--ivory-dim); text-decoration: none; padding: 8px 15px; border: 1px solid var(--border); border-radius: 0; background: rgba(8,8,10,0.72); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: color .2s, border-color .2s; }
 .back-home:hover { color: var(--gold-bright); border-color: var(--border-hover); }
 .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
 h1 { font-family: var(--serif); font-weight: 300; font-size: clamp(40px, 8vw, 72px); line-height: 1.05; margin-bottom: 20px; }
@@ -116,12 +116,12 @@ h1 em { font-style: italic; color: var(--gold); }
 .lede { font-size: 18px; color: var(--ivory-dim); max-width: 640px; margin-bottom: 16px; }
 .sub { font-size: 14px; color: var(--ivory-muted); max-width: 640px; margin-bottom: 48px; }
 .access { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 64px; }
-.access a { border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-size: 13px; color: var(--ivory); transition: border-color .2s; }
+.access a { border: 1px solid var(--border); border-radius: 0; padding: 8px 14px; font-size: 13px; color: var(--ivory); transition: border-color .2s; }
 .access a:hover { border-color: var(--border-hover); }
 .access a span { color: var(--gold); }
 h2 { font-family: var(--serif); font-weight: 300; font-size: 32px; margin: 56px 0 8px; }
 .section-sub { font-size: 14px; color: var(--ivory-muted); margin-bottom: 28px; }
-.skill { border: 1px solid var(--border); border-radius: 6px; padding: 24px 26px; margin-bottom: 16px; transition: border-color .2s; background: var(--stone); }
+.skill { border: 1px solid var(--border); border-radius: 0; padding: 24px 26px; margin-bottom: 16px; transition: border-color .2s; background: var(--stone); }
 .skill:hover { border-color: var(--border-hover); }
 .skill-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
 .skill-name { font-family: var(--serif); font-size: 26px; font-weight: 400; margin-bottom: 8px; }
@@ -131,12 +131,12 @@ h2 { font-family: var(--serif); font-weight: 300; font-size: 32px; margin: 56px 
 .skill-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
 .skill-links a { color: var(--gold); }
 .callout { border-left: 2px solid var(--gold); padding: 4px 0 4px 20px; margin: 40px 0; color: var(--ivory-dim); font-size: 15px; }
-code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: var(--gold-bright); background: var(--marble); padding: 2px 6px; border-radius: 4px; }
+code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: var(--gold-bright); background: var(--marble); padding: 2px 6px; border-radius: 0; }
 .foot { margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ivory-muted); }
 .foot a { color: var(--ivory-dim); }
 .latin { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--gold); margin-top: 8px; }
 .fw-group { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin: 28px 0 12px; }
-.logo-wall { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 20px 0 8px; }
+.logo-wall { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 0; overflow: hidden; margin: 20px 0 8px; }
 @media (max-width: 640px) { .logo-wall { grid-template-columns: repeat(2, 1fr); } }
 .logo-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 26px 12px; background: var(--stone); color: var(--ivory-dim); transition: color .25s, background .25s; }
 .logo-cell:hover { color: var(--gold-bright); background: var(--marble); }
@@ -144,13 +144,13 @@ code { font-family: ui-monospace, 'SF Mono', monospace; font-size: 13px; color: 
 .logo-cell .logo-label { font-size: 11px; letter-spacing: .5px; color: var(--ivory-muted); transition: color .25s; }
 .logo-cell:hover .logo-label { color: var(--gold); }
 .logo-note { font-size: 12px; color: var(--ivory-muted); margin-bottom: 28px; }
-.fw { border: 1px solid var(--border); border-radius: 6px; padding: 20px 22px; margin-bottom: 12px; background: var(--stone); transition: border-color .2s; }
+.fw { border: 1px solid var(--border); border-radius: 0; padding: 20px 22px; margin-bottom: 12px; background: var(--stone); transition: border-color .2s; }
 .fw:hover { border-color: var(--border-hover); }
 .fw-name { font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 6px; }
 .fw-name a { color: var(--ivory); }
 .fw-name a:hover { color: var(--gold-bright); }
 .fw-summary { font-size: 13px; color: var(--ivory-dim); margin-bottom: 12px; }
-.fw-install { font-family: ui-monospace, 'SF Mono', monospace; font-size: 12.5px; color: var(--gold-bright); background: var(--marble); padding: 5px 10px; border-radius: 5px; display: inline-block; word-break: break-all; }
+.fw-install { font-family: ui-monospace, 'SF Mono', monospace; font-size: 12.5px; color: var(--gold-bright); background: var(--marble); padding: 5px 10px; border-radius: 0; display: inline-block; word-break: break-all; }
 .fw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
 .fw-grid .fw { margin-bottom: 0; }
 @media (max-width: 640px) { .fw-grid { grid-template-columns: 1fr; } }
