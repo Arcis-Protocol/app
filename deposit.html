@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deposit — Arcis</title>
+<meta name="description" content="Deposit USDC into the Arcis vault. Non-custodial — you sign in your own wallet.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--obsidian:#08080a;--stone:#0F0F12;--marble:#16161A;--border:rgba(212,175,105,0.10);--border-hover:rgba(212,175,105,0.22);--gold:#d4af69;--gold-bright:#E2C47E;--ivory:#f0ece4;--ivory-dim:#9a9590;--ivory-muted:#8A8478;--serif:'Cormorant Garamond',serif;--sans:'Instrument Sans',sans-serif;--err:#c98a8a;--ok:#8fbf8f;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--obsidian);color:var(--ivory);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;-webkit-font-smoothing:antialiased}
+.card{width:100%;max-width:440px;background:var(--stone);border:1px solid var(--border);border-radius:0;padding:36px 30px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.05;margin-bottom:8px}
+.sub{color:var(--ivory-dim);font-size:14px;margin-bottom:28px;line-height:1.5}
+label{display:block;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ivory);margin-bottom:8px}
+.amt-wrap{position:relative;margin-bottom:8px}
+input{width:100%;background:var(--obsidian);border:1px solid var(--border);border-radius:0;padding:16px 60px 16px 16px;color:var(--ivory);font-family:var(--serif);font-size:30px;font-weight:500;transition:border-color .2s}
+input:focus{outline:none;border-color:var(--gold)}
+.suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--ivory-muted);font-family:var(--sans);font-size:15px;font-weight:600}
+.hint{font-size:12px;color:var(--ivory-muted);margin-bottom:24px}
+button{width:100%;background:var(--gold);color:var(--obsidian);border:none;border-radius:0;padding:16px;font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.01em;cursor:pointer;transition:background .3s}
+button:hover:not(:disabled){background:var(--gold-bright)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+button.ghost:hover:not(:disabled){background:var(--gold);color:var(--obsidian)}
+.row{display:flex;justify-content:space-between;font-size:13px;color:var(--ivory-dim);margin:6px 0}
+.row b{color:var(--ivory);font-weight:500}
+.msg{margin-top:18px;font-size:14px;line-height:1.5;padding:14px;border:1px solid var(--border);border-radius:0;display:none}
+.msg.show{display:block}
+.msg.error{color:var(--err);border-color:rgba(201,138,138,.3)}
+.msg.ok{color:var(--ok);border-color:rgba(143,191,143,.3)}
+.msg a{color:var(--gold-bright);text-decoration:none}
+.trust{margin-top:22px;font-size:12px;color:var(--ivory-muted);line-height:1.5;text-align:center}
+.trust b{color:var(--ivory-dim);font-weight:600}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:s .7s linear infinite;margin-right:8px;vertical-align:-1px}
+@keyframes s{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+a.back{position:fixed;top:20px;left:22px;color:var(--ivory-muted);text-decoration:none;font-size:13px}
+a.back:hover{color:var(--gold-bright)}
+</style>
+</head>
+<body>
+<a href="/" class="back">← arcis.money</a>
+<div class="card">
+  <div class="eyebrow">Arcis · Vault Deposit</div>
+  <h1>Put your USDC to work</h1>
+  <p class="sub">Deposit into the Arcis raUSDC vault — earns Aave-backed yield, withdrawable on demand, and usable as credit collateral.</p>
+
+  <label for="amount">Amount</label>
+  <div class="amt-wrap">
+    <input id="amount" type="number" inputmode="decimal" min="1" step="1" placeholder="0" value="">
+    <span class="suffix">USDC</span>
+  </div>
+  <p class="hint">Minimum 1 USDC · Base network</p>
+
+  <div id="connected" class="hidden">
+    <div class="row"><span>Wallet</span><b id="acct">—</b></div>
+    <div class="row"><span>Your USDC</span><b id="bal">—</b></div>
+  </div>
+
+  <button id="connect-btn">Connect Wallet</button>
+  <button id="deposit-btn" class="hidden">Deposit</button>
+
+  <div id="msg" class="msg"></div>
+
+  <p class="trust"><b>Non-custodial.</b> You sign every step in your own wallet. Arcis never holds your keys or your funds.</p>
+</div>
+
+<script type="module">
+import { createWalletClient, createPublicClient, custom, http, parseUnits, formatUnits, getAddress } from 'https://esm.sh/viem@2.21.55';
+import { base } from 'https://esm.sh/viem@2.21.55/chains';
+
+const USDC  = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const VAULT = '0x00325d9da832b38179ed2f0dabd4062d93e325a7';
+const SCAN  = 'https://basescan.org/tx/';
+
+const usdcAbi = [
+  { name:'allowance', type:'function', stateMutability:'view', inputs:[{type:'address'},{type:'address'}], outputs:[{type:'uint256'}] },
+  { name:'approve',   type:'function', stateMutability:'nonpayable', inputs:[{type:'address'},{type:'uint256'}], outputs:[{type:'bool'}] },
+  { name:'balanceOf', type:'function', stateMutability:'view', inputs:[{type:'address'}], outputs:[{type:'uint256'}] },
+];
+const vaultAbi = [
+  { name:'deposit', type:'function', stateMutability:'nonpayable', inputs:[{type:'uint256'}], outputs:[{type:'uint256'}] },
+];
+
+const $ = (id) => document.getElementById(id);
+const publicClient = createPublicClient({ chain: base, transport: http() });
+let walletClient, account;
+
+// prefill amount from ?amount=
+const qAmt = new URLSearchParams(location.search).get('amount');
+if (qAmt && !isNaN(parseFloat(qAmt))) $('amount').value = String(parseFloat(qAmt));
+
+function msg(kind, html){ const m=$('msg'); m.className='msg show '+kind; m.innerHTML=html; }
+function clearMsg(){ $('msg').className='msg'; }
+
+async function refreshBalance(){
+  try{
+    const b = await publicClient.readContract({ address:USDC, abi:usdcAbi, functionName:'balanceOf', args:[account] });
+    $('bal').textContent = Number(formatUnits(b,6)).toLocaleString(undefined,{maximumFractionDigits:2}) + ' USDC';
+  }catch{ $('bal').textContent='—'; }
+}
+
+async function connect(){
+  clearMsg();
+  if (!window.ethereum){
+    msg('error','No wallet found in this browser. Open this page inside your wallet app\u2019s browser (Coinbase Wallet, MetaMask, or Rainbow \u2192 Browser), then tap Connect.');
+    return;
+  }
+  try{
+    walletClient = createWalletClient({ chain: base, transport: custom(window.ethereum) });
+    const [addr] = await walletClient.requestAddresses();
+    account = getAddress(addr);
+    const id = await walletClient.getChainId();
+    if (id !== 8453){
+      try { await walletClient.switchChain({ id: 8453 }); }
+      catch { try { await walletClient.addChain({ chain: base }); await walletClient.switchChain({ id: 8453 }); } catch { msg('error','Please switch your wallet to the Base network, then try again.'); return; } }
+    }
+    $('acct').textContent = account.slice(0,6)+'…'+account.slice(-4);
+    $('connected').classList.remove('hidden');
+    $('connect-btn').classList.add('hidden');
+    $('deposit-btn').classList.remove('hidden');
+    await refreshBalance();
+  }catch(e){ msg('error', 'Could not connect: '+(e?.shortMessage||e?.message||'unknown error')); }
+}
+
+async function deposit(){
+  clearMsg();
+  const raw = $('amount').value.trim();
+  const amt = parseFloat(raw);
+  if (!(amt >= 1)){ msg('error','Minimum deposit is 1 USDC.'); return; }
+  let amountWei;
+  try { amountWei = parseUnits(raw, 6); } catch { msg('error','Enter a valid amount.'); return; }
+
+  $('deposit-btn').disabled = true;
+  try{
+    const bal = await publicClient.readContract({ address:USDC, abi:usdcAbi, functionName:'balanceOf', args:[account] });
+    if (bal < amountWei){ msg('error','Not enough USDC in your wallet for that amount.'); $('deposit-btn').disabled=false; return; }
+
+    const allow = await publicClient.readContract({ address:USDC, abi:usdcAbi, functionName:'allowance', args:[account, VAULT] });
+    if (allow < amountWei){
+      msg('ok','<span class="spin"></span>Step 1 of 2 — approve USDC in your wallet…');
+      const aTx = await walletClient.writeContract({ address:USDC, abi:usdcAbi, functionName:'approve', args:[VAULT, amountWei], account, chain: base });
+      msg('ok','<span class="spin"></span>Approving… <a href="'+SCAN+aTx+'" target="_blank">view</a>');
+      await publicClient.waitForTransactionReceipt({ hash:aTx });
+    }
+
+    msg('ok','<span class="spin"></span>'+(allow<amountWei?'Step 2 of 2 — ':'')+'confirm the deposit in your wallet…');
+    const dTx = await walletClient.writeContract({ address:VAULT, abi:vaultAbi, functionName:'deposit', args:[amountWei], account, chain: base });
+    msg('ok','<span class="spin"></span>Depositing… <a href="'+SCAN+dTx+'" target="_blank">view</a>');
+    await publicClient.waitForTransactionReceipt({ hash:dTx });
+
+    msg('ok','🏛️ Done. '+raw+' USDC is now working in the Arcis vault.<br><a href="'+SCAN+dTx+'" target="_blank">View on BaseScan →</a>');
+    $('deposit-btn').textContent = 'Deposit again';
+    await refreshBalance();
+  }catch(e){
+    const m = e?.shortMessage || e?.message || 'Transaction failed.';
+    msg('error', /rejected|denied/i.test(m) ? 'You cancelled the signature.' : m);
+  }
+  $('deposit-btn').disabled = false;
+}
+
+$('connect-btn').addEventListener('click', connect);
+$('deposit-btn').addEventListener('click', deposit);
+</script>
+</body>
+</html>
