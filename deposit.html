@@ -73,6 +73,11 @@ a.back:hover{color:var(--gold-bright)}
 <script type="module">
 import { createWalletClient, createPublicClient, custom, http, parseUnits, formatUnits, getAddress } from 'https://esm.sh/viem@2.21.55';
 import { base } from 'https://esm.sh/viem@2.21.55/chains';
+import { EthereumProvider } from 'https://esm.sh/@walletconnect/ethereum-provider@2.17.2';
+
+// ── Reown / WalletConnect project ID (PUBLIC key — safe in client code). ──
+// Get a free one at https://cloud.reown.com → create a project → copy Project ID.
+const WC_PROJECT_ID = 'REPLACE_WITH_YOUR_REOWN_PROJECT_ID';
 
 const USDC  = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const VAULT = '0x00325d9da832b38179ed2f0dabd4062d93e325a7';
@@ -89,7 +94,7 @@ const vaultAbi = [
 
 const $ = (id) => document.getElementById(id);
 const publicClient = createPublicClient({ chain: base, transport: http() });
-let walletClient, account;
+let walletClient, account, eip1193;
 
 // prefill amount from ?amount=
 const qAmt = new URLSearchParams(location.search).get('amount');
@@ -105,16 +110,26 @@ async function refreshBalance(){
   }catch{ $('bal').textContent='—'; }
 }
 
+// Injected wallet (dapp browser) if present; otherwise WalletConnect (Safari → wallet app).
+async function getProvider(){
+  if (window.ethereum) return window.ethereum;
+  if (WC_PROJECT_ID.startsWith('REPLACE')) throw new Error('Wallet connection isn\u2019t configured yet (Reown project ID not set).');
+  const wc = await EthereumProvider.init({
+    projectId: WC_PROJECT_ID, chains: [8453], optionalChains: [8453], showQrModal: true,
+    metadata: { name:'Arcis', description:'Deposit into the Arcis vault', url:'https://arcis.money', icons:['https://arcis.money/favicon.png'] },
+  });
+  await wc.connect();   // opens the wallet picker / deep-links to installed wallets
+  return wc;
+}
+
 async function connect(){
   clearMsg();
-  if (!window.ethereum){
-    msg('error','No wallet found in this browser. Open this page inside your wallet app\u2019s browser (Coinbase Wallet, MetaMask, or Rainbow \u2192 Browser), then tap Connect.');
-    return;
-  }
+  $('connect-btn').disabled = true;
   try{
-    walletClient = createWalletClient({ chain: base, transport: custom(window.ethereum) });
-    const [addr] = await walletClient.requestAddresses();
-    account = getAddress(addr);
+    eip1193 = await getProvider();
+    walletClient = createWalletClient({ chain: base, transport: custom(eip1193) });
+    const addrs = await walletClient.requestAddresses();
+    account = getAddress(addrs[0]);
     const id = await walletClient.getChainId();
     if (id !== 8453){
       try { await walletClient.switchChain({ id: 8453 }); }
@@ -125,7 +140,7 @@ async function connect(){
     $('connect-btn').classList.add('hidden');
     $('deposit-btn').classList.remove('hidden');
     await refreshBalance();
-  }catch(e){ msg('error', 'Could not connect: '+(e?.shortMessage||e?.message||'unknown error')); }
+  }catch(e){ msg('error', 'Could not connect: '+(e?.shortMessage||e?.message||'unknown error')); $('connect-btn').disabled = false; }
 }
 
 async function deposit(){
