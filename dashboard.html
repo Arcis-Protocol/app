@@ -880,6 +880,47 @@ async function fetchAll() {
   }
 }
 
+// ── Rewards rendering + live auto-refresh ──
+var positionTimer = null, positionAddr = null;
+
+function renderRewards(p) {
+  var netEl = document.getElementById('resNet'), earnEl = document.getElementById('resEarned');
+  var rhNet = document.getElementById('rhNet'), rhEarn = document.getElementById('rhEarned');
+  if (!p || p.netDeposited == null) {
+    netEl.textContent = '—'; earnEl.textContent = '—'; rhNet.textContent = '—'; rhEarn.textContent = '—';
+    return;
+  }
+  // live value overrides the cached read shown a moment ago
+  if (p.liveValue != null) {
+    var lv = '$' + fmtU(p.liveValue);
+    document.getElementById('resValue').textContent = lv;
+    document.getElementById('rhValue').textContent = lv;
+  }
+  netEl.textContent = '$' + fmtU(p.netDeposited);
+  rhNet.textContent = '$' + fmtU(p.netDeposited);
+  var raw = (p.earned != null) ? Number(p.earned) : (Number(p.liveValue || p.value || 0) - Number(p.netDeposited));
+  var pctStr = (p.earnedPct != null) ? ' (' + (p.earnedPct >= 0 ? '+' : '') + p.earnedPct.toFixed(2) + '%)' : '';
+  var txt = (raw >= 0 ? '+$' : '\u2212$') + fmtU(Math.abs(raw)) + pctStr;
+  earnEl.textContent = txt; earnEl.className = 'val ' + (raw > 0 ? 'green' : '');
+  rhEarn.textContent = txt; rhEarn.className = 'rh-big ' + (raw > 0 ? 'green' : 'gold');
+  if (p.firstDepositTs) {
+    var dt = new Date(p.firstDepositTs * 1000);
+    var days = Math.max(0, Math.floor((Date.now() / 1000 - p.firstDepositTs) / 86400));
+    document.getElementById('rhSince').textContent = 'Earning since ' + dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' \u00b7 ' + days + ' day' + (days === 1 ? '' : 's');
+  }
+}
+
+function startPositionRefresh(addr) {
+  if (positionTimer) clearInterval(positionTimer);
+  positionAddr = addr;
+  positionTimer = setInterval(function () {
+    fetch('https://mcp.arcis.money/api/position?address=' + positionAddr)
+      .then(function (r) { return r.json(); })
+      .then(renderRewards)
+      .catch(function () {});
+  }, 20000);
+}
+
 // ── Lookup ──
 async function lookupPosition() {
   var addr = document.getElementById('lookupInput').value.trim();
@@ -913,31 +954,7 @@ async function lookupPosition() {
     netEl.textContent = '…'; earnEl.textContent = '…'; earnEl.className = 'val';
     fetch('https://mcp.arcis.money/api/position?address=' + addr)
       .then(function(r){ return r.json(); })
-      .then(function(p){
-        if (p && p.netDeposited != null) {
-          netEl.textContent = '$' + fmtU(p.netDeposited);
-          var netRaw = BigInt(p.netDeposited);
-          var eRaw = decU(vl) - netRaw;          // Position Value − Net Deposited (reconciles on screen)
-          var eNum = Number(eRaw);
-          var pct = (netRaw > 0n) ? (Number(eRaw * 1000000n / netRaw) / 10000) : null;
-          var pctStr = (pct != null) ? ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)' : '';
-          var earnedTxt = (eNum >= 0 ? '+$' : '\u2212$') + fmtU(Math.abs(eNum)) + pctStr;
-          var cls = (eNum > 0 ? 'green' : '');
-          earnEl.textContent = earnedTxt; earnEl.className = 'val ' + cls;
-          // hero
-          document.getElementById('rhNet').textContent = '$' + fmtU(p.netDeposited);
-          document.getElementById('rhEarned').textContent = earnedTxt;
-          document.getElementById('rhEarned').className = 'rh-big ' + (eNum > 0 ? 'green' : 'gold');
-          if (p.firstDepositTs) {
-            var dt = new Date(p.firstDepositTs * 1000);
-            var days = Math.max(0, Math.floor((Date.now()/1000 - p.firstDepositTs) / 86400));
-            document.getElementById('rhSince').textContent = 'Earning since ' + dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' \u00b7 ' + days + ' day' + (days === 1 ? '' : 's');
-          }
-        } else {
-          netEl.textContent = '—'; earnEl.textContent = '—';
-          document.getElementById('rhNet').textContent = '—'; document.getElementById('rhEarned').textContent = '—';
-        }
-      })
+      .then(function(p){ renderRewards(p); startPositionRefresh(addr); })
       .catch(function(){
         netEl.textContent = '—'; earnEl.textContent = '—';
         document.getElementById('rhNet').textContent = '—'; document.getElementById('rhEarned').textContent = '—';
@@ -1243,6 +1260,7 @@ function disconnectWallet() {
   btn.classList.remove('connected');
   document.getElementById('actionsBox').style.display = 'none';
   var hero = document.getElementById('rewardsHero'); if (hero) hero.style.display = 'none';
+  if (positionTimer) { clearInterval(positionTimer); positionTimer = null; }
   refreshCreateVaultUI();
 }
 
