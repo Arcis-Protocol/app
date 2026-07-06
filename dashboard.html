@@ -506,8 +506,10 @@ Trust Wallet, Coinbase Agentic Wallets, Coinbase AgentKit, ElizaOS, LangChain, C
       <div id="lookupResult" style="display:none" class="lookup-result">
         <div class="addr" id="lookupAddr"></div>
         <div class="result-grid">
-          <div class="result-item"><div class="label">raUSDC Shares</div><div class="val" id="resShares">—</div></div>
           <div class="result-item"><div class="label">Position Value</div><div class="val gold" id="resValue">—</div></div>
+          <div class="result-item"><div class="label">Net Deposited</div><div class="val" id="resNet">—</div></div>
+          <div class="result-item"><div class="label">Rewards Earned</div><div class="val" id="resEarned">—</div></div>
+          <div class="result-item"><div class="label">raUSDC Shares</div><div class="val" id="resShares">—</div></div>
           <div class="result-item"><div class="label">USDC Wallet</div><div class="val" id="resUSDC">—</div></div>
         </div>
       </div>
@@ -871,6 +873,27 @@ async function lookupPosition() {
     document.getElementById('resValue').textContent = '$' + fmtU(decU(vl));
     document.getElementById('resUSDC').textContent = '$' + fmtU(decU(ub));
     document.getElementById('lookupResult').style.display = 'block';
+
+    // Accrued rewards (net deposited + earned) from the backend
+    var netEl = document.getElementById('resNet'), earnEl = document.getElementById('resEarned');
+    netEl.textContent = '…'; earnEl.textContent = '…'; earnEl.className = 'val';
+    fetch('https://mcp.arcis.money/api/position?address=' + addr)
+      .then(function(r){ return r.json(); })
+      .then(function(p){
+        if (p && p.netDeposited != null) {
+          netEl.textContent = '$' + fmtU(p.netDeposited);
+          var netRaw = BigInt(p.netDeposited);
+          var eRaw = decU(vl) - netRaw;          // Position Value − Net Deposited (reconciles on screen)
+          var eNum = Number(eRaw);
+          var pct = (netRaw > 0n) ? (Number(eRaw * 1000000n / netRaw) / 10000) : null;
+          var pctStr = (pct != null) ? ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)' : '';
+          earnEl.textContent = (eNum >= 0 ? '+$' : '\u2212$') + fmtU(Math.abs(eNum)) + pctStr;
+          earnEl.className = 'val ' + (eNum > 0 ? 'green' : '');
+        } else {
+          netEl.textContent = '—'; earnEl.textContent = '—';
+        }
+      })
+      .catch(function(){ netEl.textContent = '—'; earnEl.textContent = '—'; });
   } catch(e) { console.error(e); }
   document.getElementById('lookupBtn').textContent = 'QUERY';
 }
