@@ -178,6 +178,16 @@ a:hover { color: var(--ivory); }
   letter-spacing: 0.05em; font-family: var(--font-body);
 }
 .lookup-btn:hover { background: var(--gold-bright); }
+.rewards-hero { border: 1px solid rgba(212,175,105,0.28); background: linear-gradient(180deg, rgba(212,175,105,0.055), rgba(15,15,18,0.35)); padding: 22px 24px; margin-bottom: 24px; }
+.rh-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; }
+.rh-eyebrow { font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+.rh-since { font-size: 11px; color: var(--ivory-muted); font-family: var(--font-mono); text-align: right; }
+.rh-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.rh-big { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--ivory); }
+.rh-big.gold { color: var(--gold); }
+.rh-big.green { color: var(--green); }
+.rh-lbl { font-size: 11px; color: var(--ivory-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 8px; }
+@media (max-width: 640px) { .rh-grid { grid-template-columns: 1fr; gap: 14px; } .rh-big { font-size: 30px; } }
 .lookup-result { margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 0; border: 1px solid var(--border); }
 .lookup-result .addr { font-size: 11px; color: var(--ivory-muted); margin-bottom: 10px; font-family: var(--font-mono); word-break: break-all; }
 .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
@@ -444,6 +454,20 @@ Trust Wallet, Coinbase Agentic Wallets, Coinbase AgentKit, ElizaOS, LangChain, C
 
   <!-- VAULT TAB -->
   <section class="tab-panel active" id="panel-vault" role="tabpanel" aria-label="Vault overview">
+
+    <!-- Your Rewards — front and center when a wallet is connected or an address is looked up -->
+    <div class="rewards-hero" id="rewardsHero" style="display:none">
+      <div class="rh-top">
+        <span class="rh-eyebrow" id="rhTitle">YOUR POSITION</span>
+        <span class="rh-since" id="rhSince"></span>
+      </div>
+      <div class="rh-grid">
+        <div class="rh-cell"><div class="rh-big gold" id="rhValue">—</div><div class="rh-lbl">Position Value</div></div>
+        <div class="rh-cell"><div class="rh-big" id="rhEarned">—</div><div class="rh-lbl">Rewards Earned</div></div>
+        <div class="rh-cell"><div class="rh-big" id="rhNet">—</div><div class="rh-lbl">Net Deposited</div></div>
+      </div>
+    </div>
+
     <div class="stats-row">
       <article class="stat-card" aria-label="Total Value Locked">
         <div class="stat-label">Total Value Locked</div>
@@ -874,6 +898,16 @@ async function lookupPosition() {
     document.getElementById('resUSDC').textContent = '$' + fmtU(decU(ub));
     document.getElementById('lookupResult').style.display = 'block';
 
+    // Your Rewards hero — front and center
+    var hero = document.getElementById('rewardsHero');
+    var hasPos = Number(decU(sh)) > 0;
+    document.getElementById('rhTitle').textContent = (connectedAccount && addr.toLowerCase() === connectedAccount.toLowerCase()) ? 'YOUR POSITION' : (addr.slice(0,6) + '\u2026' + addr.slice(-4));
+    document.getElementById('rhValue').textContent = '$' + fmtU(decU(vl));
+    document.getElementById('rhEarned').textContent = '\u2026'; document.getElementById('rhEarned').className = 'rh-big';
+    document.getElementById('rhNet').textContent = '\u2026';
+    document.getElementById('rhSince').textContent = '';
+    hero.style.display = hasPos ? 'block' : 'none';
+
     // Accrued rewards (net deposited + earned) from the backend
     var netEl = document.getElementById('resNet'), earnEl = document.getElementById('resEarned');
     netEl.textContent = '…'; earnEl.textContent = '…'; earnEl.className = 'val';
@@ -887,13 +921,27 @@ async function lookupPosition() {
           var eNum = Number(eRaw);
           var pct = (netRaw > 0n) ? (Number(eRaw * 1000000n / netRaw) / 10000) : null;
           var pctStr = (pct != null) ? ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)' : '';
-          earnEl.textContent = (eNum >= 0 ? '+$' : '\u2212$') + fmtU(Math.abs(eNum)) + pctStr;
-          earnEl.className = 'val ' + (eNum > 0 ? 'green' : '');
+          var earnedTxt = (eNum >= 0 ? '+$' : '\u2212$') + fmtU(Math.abs(eNum)) + pctStr;
+          var cls = (eNum > 0 ? 'green' : '');
+          earnEl.textContent = earnedTxt; earnEl.className = 'val ' + cls;
+          // hero
+          document.getElementById('rhNet').textContent = '$' + fmtU(p.netDeposited);
+          document.getElementById('rhEarned').textContent = earnedTxt;
+          document.getElementById('rhEarned').className = 'rh-big ' + (eNum > 0 ? 'green' : 'gold');
+          if (p.firstDepositTs) {
+            var dt = new Date(p.firstDepositTs * 1000);
+            var days = Math.max(0, Math.floor((Date.now()/1000 - p.firstDepositTs) / 86400));
+            document.getElementById('rhSince').textContent = 'Earning since ' + dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' \u00b7 ' + days + ' day' + (days === 1 ? '' : 's');
+          }
         } else {
           netEl.textContent = '—'; earnEl.textContent = '—';
+          document.getElementById('rhNet').textContent = '—'; document.getElementById('rhEarned').textContent = '—';
         }
       })
-      .catch(function(){ netEl.textContent = '—'; earnEl.textContent = '—'; });
+      .catch(function(){
+        netEl.textContent = '—'; earnEl.textContent = '—';
+        document.getElementById('rhNet').textContent = '—'; document.getElementById('rhEarned').textContent = '—';
+      });
   } catch(e) { console.error(e); }
   document.getElementById('lookupBtn').textContent = 'QUERY';
 }
@@ -1194,6 +1242,7 @@ function disconnectWallet() {
   btn.textContent = 'Connect Wallet';
   btn.classList.remove('connected');
   document.getElementById('actionsBox').style.display = 'none';
+  var hero = document.getElementById('rewardsHero'); if (hero) hero.style.display = 'none';
   refreshCreateVaultUI();
 }
 
