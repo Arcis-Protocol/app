@@ -102,6 +102,46 @@
         "deposit",
         "collateral"
       ]
+    },
+    {
+      "id": "withdraw-usdc",
+      "name": "Withdraw from the Vault",
+      "summary": "Redeem raUSDC shares back into USDC \u2014 instant, non-custodial, any time.",
+      "category": "write",
+      "url": "https://arcis.money/skills/withdraw-usdc.json",
+      "when_to_use": "The agent needs its capital back to spend and wants to convert its yield-bearing raUSDC position to USDC. Withdrawable on demand; only the position owner can withdraw.",
+      "tags": [
+        "vault",
+        "withdraw",
+        "usdc",
+        "non-custodial"
+      ]
+    },
+    {
+      "id": "repay-loan",
+      "name": "Repay a Loan",
+      "summary": "Repay borrowed USDC against an AgentCredit loan to restore full access to your collateral.",
+      "category": "write",
+      "url": "https://arcis.money/skills/repay-loan.json",
+      "when_to_use": "The agent has an open credit line and wants to pay it down or off, lowering its debt and freeing collateral.",
+      "tags": [
+        "credit",
+        "repay",
+        "loan"
+      ]
+    },
+    {
+      "id": "preview-deposit",
+      "name": "Preview a Deposit",
+      "summary": "See how many raUSDC shares a given USDC deposit would mint, before committing. Read-only.",
+      "category": "read",
+      "url": "https://arcis.money/skills/preview-deposit.json",
+      "when_to_use": "The agent wants to model a deposit \u2014 the shares it would receive at the current exchange rate \u2014 without sending a transaction.",
+      "tags": [
+        "vault",
+        "preview",
+        "read"
+      ]
     }
   ]
 }

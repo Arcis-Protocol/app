@@ -1,0 +1,40 @@
+{
+ "id": "withdraw-usdc",
+ "schema": "arcis-skill/1.0",
+ "name": "Withdraw from the Vault",
+ "summary": "Redeem raUSDC shares back into USDC \u2014 instant, non-custodial, any time.",
+ "category": "write",
+ "when_to_use": "The agent needs its capital back to spend and wants to convert its yield-bearing raUSDC position to USDC. Withdrawable on demand; only the position owner can withdraw.",
+ "inputs": [
+  {
+   "name": "shares",
+   "type": "uint256",
+   "description": "raUSDC shares to redeem (or 'max' for all)"
+  }
+ ],
+ "outputs": [
+  {
+   "name": "amount",
+   "type": "uint256",
+   "description": "USDC returned"
+  }
+ ],
+ "invocation": {
+  "mcp": {
+   "server": "https://mcp.arcis.money/mcp",
+   "hint": "Ask: 'withdraw my Arcis position'"
+  },
+  "sdk": {
+   "package": "@arcisprotocol/sdk",
+   "code": "const pos = await vault.position(account.address);\nawait vault.withdraw(pos.shares); // or a partial share amount"
+  }
+ },
+ "returns_yield": "\u2014",
+ "risk": "Non-custodial: only the position owner can withdraw. A 0.1% fee applies only when a withdrawal dips into the vault's liquid reserve.",
+ "tags": [
+  "vault",
+  "withdraw",
+  "usdc",
+  "non-custodial"
+ ]
+}

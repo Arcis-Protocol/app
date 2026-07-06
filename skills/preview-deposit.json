@@ -1,0 +1,39 @@
+{
+ "id": "preview-deposit",
+ "schema": "arcis-skill/1.0",
+ "name": "Preview a Deposit",
+ "summary": "See how many raUSDC shares a given USDC deposit would mint, before committing. Read-only.",
+ "category": "read",
+ "when_to_use": "The agent wants to model a deposit \u2014 the shares it would receive at the current exchange rate \u2014 without sending a transaction.",
+ "inputs": [
+  {
+   "name": "amount",
+   "type": "uint256",
+   "description": "USDC amount to preview"
+  }
+ ],
+ "outputs": [
+  {
+   "name": "shares",
+   "type": "uint256",
+   "description": "raUSDC shares that would be minted"
+  }
+ ],
+ "invocation": {
+  "mcp": {
+   "server": "https://mcp.arcis.money/mcp",
+   "hint": "Ask: 'preview a 100 USDC deposit into Arcis'"
+  },
+  "sdk": {
+   "package": "@arcisprotocol/sdk",
+   "code": "const shares = await vault.previewDeposit(parseUSDC('100'));"
+  }
+ },
+ "returns_yield": "\u2014",
+ "risk": "Read-only \u2014 no transaction, no signature, no risk.",
+ "tags": [
+  "vault",
+  "preview",
+  "read"
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "id": "repay-loan",
+ "schema": "arcis-skill/1.0",
+ "name": "Repay a Loan",
+ "summary": "Repay borrowed USDC against an AgentCredit loan to restore full access to your collateral.",
+ "category": "write",
+ "when_to_use": "The agent has an open credit line and wants to pay it down or off, lowering its debt and freeing collateral.",
+ "inputs": [
+  {
+   "name": "loanId",
+   "type": "uint256",
+   "description": "The loan to repay"
+  },
+  {
+   "name": "amount",
+   "type": "uint256",
+   "description": "USDC to repay (or full)"
+  }
+ ],
+ "outputs": [
+  {
+   "name": "remainingOwed",
+   "type": "uint256",
+   "description": "USDC still owed after repayment"
+  }
+ ],
+ "invocation": {
+  "mcp": {
+   "server": "https://mcp.arcis.money/mcp",
+   "hint": "Ask: 'repay my Arcis loan'"
+  },
+  "sdk": {
+   "package": "@arcisprotocol/sdk",
+   "code": "import { AgentCredit, BASE_CONFIG } from '@arcisprotocol/sdk';\nconst credit = new AgentCredit(BASE_CONFIG, pub, wallet);\nawait credit.repay(loanId, parseUSDC('100'));"
+  }
+ },
+ "returns_yield": "\u2014",
+ "risk": "Repaying lowers your health-factor risk and frees collateral. Interest accrues at your reputation-tier rate until repaid.",
+ "tags": [
+  "credit",
+  "repay",
+  "loan"
+ ]
+}
