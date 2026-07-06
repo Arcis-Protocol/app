@@ -187,6 +187,8 @@ a:hover { color: var(--ivory); }
 .rh-big.gold { color: var(--gold); }
 .rh-big.green { color: var(--green); }
 .rh-lbl { font-size: 11px; color: var(--ivory-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 8px; }
+.rh-caption { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--ivory-muted); letter-spacing: 0.01em; }
+.rh-caption b { color: var(--gold); font-weight: 600; }
 @media (max-width: 640px) { .rh-grid { grid-template-columns: 1fr; gap: 14px; } .rh-big { font-size: 30px; } }
 .lookup-result { margin-top: 16px; padding: 16px; background: var(--bg); border-radius: 0; border: 1px solid var(--border); }
 .lookup-result .addr { font-size: 11px; color: var(--ivory-muted); margin-bottom: 10px; font-family: var(--font-mono); word-break: break-all; }
@@ -466,6 +468,7 @@ Trust Wallet, Coinbase Agentic Wallets, Coinbase AgentKit, ElizaOS, LangChain, C
         <div class="rh-cell"><div class="rh-big" id="rhEarned">—</div><div class="rh-lbl">Rewards Earned</div></div>
         <div class="rh-cell"><div class="rh-big" id="rhNet">—</div><div class="rh-lbl">Net Deposited</div></div>
       </div>
+      <div class="rh-caption" id="rhCaption"></div>
     </div>
 
     <div class="stats-row">
@@ -908,6 +911,18 @@ function renderRewards(p) {
     var days = Math.max(0, Math.floor((Date.now() / 1000 - p.firstDepositTs) / 86400));
     document.getElementById('rhSince').textContent = 'Earning since ' + dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' \u00b7 ' + days + ' day' + (days === 1 ? '' : 's');
   }
+  // realized vs unrealized breakdown
+  var cap = document.getElementById('rhCaption');
+  if (p.liveValue != null && p.value != null) {
+    var unreal = Number(p.liveValue) - Number(p.value);
+    if (unreal > 0) {
+      var n = unreal / 1e6;
+      var s = n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: n < 1 ? 6 : 2 });
+      cap.innerHTML = 'Includes <b>$' + s + '</b> unrealized yield \u00b7 realized on next harvest';
+    } else {
+      cap.textContent = 'All earnings realized on-chain.';
+    }
+  } else { cap.textContent = ''; }
 }
 
 function startPositionRefresh(addr) {
