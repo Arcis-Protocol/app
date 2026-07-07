@@ -1070,7 +1070,6 @@
   /* Tablet */
   @media (max-width: 1024px) and (min-width: 769px) {
     .hamburger { display: none; }
-    .nav-links a:not(.nav-cta):not([href="/dashboard"]) { display: none; }
     .hero-actions { gap: 14px; }
   }
 
@@ -1099,9 +1098,9 @@
     <div class="nav-links">
       <a href="/skills">Skills</a>
       <a href="/legion">Legion</a>
-      <a href="/dashboard">Dashboard</a>
+      <a href="/custos">Custos</a>
       <a href="https://docs.arcis.money" target="_blank" rel="noopener">Docs</a>
-      <a href="#waitlist" class="nav-cta">Enter the Citadel</a>
+      <a href="/dashboard" class="nav-cta">Enter the Citadel</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
       <span></span><span></span><span></span>
@@ -1114,10 +1113,9 @@
   <div class="mobile-menu-inner">
     <a href="/skills" onclick="closeMenu()">Skills</a>
     <a href="/legion" onclick="closeMenu()">Legion</a>
-    <a href="/dashboard" onclick="closeMenu()">Dashboard</a>
+    <a href="/custos" onclick="closeMenu()">Custos</a>
     <a href="https://docs.arcis.money" target="_blank" rel="noopener" onclick="closeMenu()">Docs</a>
-    <a href="https://t.me/arcisprotocol" target="_blank" onclick="closeMenu()">Telegram</a>
-    <a href="#waitlist" class="mobile-cta" onclick="closeMenu()">Enter the Citadel</a>
+    <a href="/dashboard" class="mobile-cta" onclick="closeMenu()">Enter the Citadel</a>
   </div>
 </div>
 
