@@ -25,7 +25,7 @@
   nav{display:flex;justify-content:space-between;align-items:center;padding:20px;max-width:1100px;margin:0 auto}
   .brand{display:flex;align-items:center;gap:12px}
   .brand img{height:28px;filter:drop-shadow(0 0 10px rgba(212,175,105,0.25))}
-  .brand span{font-family:var(--font-display);font-size:21px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);padding-left:0.2em}
+  .brand span{font-family:var(--font-display);font-size:21px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ivory);padding-left:0.2em}
   .nav-links{display:flex;gap:24px;font-size:13px;letter-spacing:0.04em}
   .nav-links a{color:var(--muted);transition:color .2s}
   .nav-links a:hover{color:var(--gold)}
@@ -135,18 +135,59 @@
   .ac-step:disabled{opacity:.6;cursor:default}
   .ac-tx{font-family:var(--font-mono);font-size:11px;color:var(--gold);text-decoration:underline;margin-left:2px}
   .ac-note{font-size:11px;color:var(--muted);margin-top:11px}
+  .nav-right{display:flex;align-items:center;gap:18px}
+  .wbtn{border:1px solid var(--border-hover);background:transparent;color:var(--gold);font-family:var(--font-ui);font-size:12px;font-weight:500;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .wbtn:hover{background:rgba(212,175,105,0.08)}
+  .wbtn.connected{color:var(--ivory);font-family:var(--font-mono);font-size:11.5px}
+  .hamb{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px}
+  .hamb span{width:20px;height:1.5px;background:var(--ivory);display:block}
+  .mmenu{display:none;position:fixed;top:58px;left:14px;right:14px;background:var(--stone);border:1px solid var(--border-hover);z-index:300;flex-direction:column}
+  .mmenu.open{display:flex}
+  .mmenu a{padding:15px 18px;color:var(--ivory);border-bottom:1px solid var(--border);font-size:15px;cursor:pointer}
+  .mmenu a:last-child{border-bottom:none}
+  .mmenu a.mw{color:var(--gold);font-family:var(--font-mono);font-size:13px}
+  @media(max-width:640px){
+    nav{position:sticky;top:0;z-index:250;background:var(--obsidian);border-bottom:1px solid var(--border);padding:14px 16px}
+    .nav-links,.wbtn{display:none}
+    .hamb{display:flex}
+    .wrap{padding:0;max-width:100%}
+    .hero{display:none}
+    .chat{margin-top:0;border-left:none;border-right:none;border-top:none;height:calc(100dvh - 57px);display:flex;flex-direction:column;background:var(--obsidian)}
+    .log{flex:1;max-height:none;min-height:0}
+    .chips{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:12px}
+    .chip{white-space:nowrap;flex-shrink:0}
+    .addr{display:none}
+    .compose{position:sticky;bottom:0;background:var(--obsidian)}
+    .disclaimer{padding:16px}
+    .section{margin:34px 16px 0}
+    .foot-in{flex-direction:column;text-align:center;gap:14px}
+    .foot-links{justify-content:center;flex-wrap:wrap;gap:16px}
+  }
 </style>
 </head>
 <body>
 
 <nav>
   <a class="brand" href="/"><img src="/logo.png" alt="Arcis"/><span>Arcis</span></a>
-  <div class="nav-links">
-    <a href="/dashboard">Dashboard</a>
-    <a href="https://docs.arcis.money" target="_blank" rel="noopener">Docs</a>
-    <a href="https://x.com/ArcisProtocol" target="_blank" rel="noopener">X</a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="https://docs.arcis.money" target="_blank" rel="noopener">Docs</a>
+      <a href="https://x.com/ArcisProtocol" target="_blank" rel="noopener">X</a>
+    </div>
+    <button class="wbtn" id="wbtn">Connect</button>
+    <button class="hamb" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div class="mmenu" id="mmenu">
+  <a class="mw" id="mConnect">Connect Wallet</a>
+  <a href="/dashboard">Dashboard</a>
+  <a href="#treasury">Your Treasury</a>
+  <a href="#hire">Hire CUSTOS</a>
+  <a href="https://docs.arcis.money" target="_blank" rel="noopener">Docs</a>
+  <a href="https://x.com/ArcisProtocol" target="_blank" rel="noopener">X</a>
+  <a href="https://t.me/arcisprotocol" target="_blank" rel="noopener">Telegram</a>
+</div>
 
 <div class="wrap">
   <section class="hero">
@@ -294,7 +335,7 @@
     busy = true; sendBtn.disabled = true; chatState.textContent='thinking…';
     var t = addMsg('assistant',''); t.querySelector('.bubble').innerHTML='<span class="typing">CUSTOS is considering…</span>';
     try{
-      var addr = addrEl.value.trim();
+      var addr = connectedAddr || addrEl.value.trim();
       var body = { messages: history };
       if(/^0x[0-9a-fA-F]{40}$/.test(addr)) body.address = addr;
       var r = await fetch(API+'/api/custos/chat', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -410,6 +451,28 @@
     (action.steps||[]).forEach(function(s,i){ btns[i].addEventListener('click', function(){ signStep(s, btns[i]); }); });
     log.scrollTop=log.scrollHeight;
   }
+
+  // ── Wallet connect state ──
+  var connectedAddr = null;
+  function shorten(a){ return a.slice(0,6)+'…'+a.slice(-4); }
+  function updateWalletUI(){
+    var w=document.getElementById('wbtn'), m=document.getElementById('mConnect');
+    if(connectedAddr){ w.textContent=shorten(connectedAddr); w.classList.add('connected'); m.textContent=shorten(connectedAddr)+' · Base'; m.classList.remove('mw'); }
+    else { w.textContent='Connect'; w.classList.remove('connected'); m.textContent='Connect Wallet'; m.classList.add('mw'); }
+  }
+  async function connectWallet(){
+    try{ connectedAddr = await ensureWallet(); updateWalletUI(); }
+    catch(e){ alert((e&&e.message)||'Could not connect a wallet.'); }
+  }
+  document.getElementById('wbtn').addEventListener('click', connectWallet);
+  document.getElementById('mConnect').addEventListener('click', function(){ connectWallet(); closeMenu(); });
+  if(window.ethereum && window.ethereum.on){ window.ethereum.on('accountsChanged', function(a){ connectedAddr=(a&&a[0])?a[0]:null; updateWalletUI(); }); }
+
+  // ── Hamburger menu ──
+  var mmenu=document.getElementById('mmenu');
+  function closeMenu(){ mmenu.classList.remove('open'); }
+  document.getElementById('hamb').addEventListener('click', function(){ mmenu.classList.toggle('open'); });
+  mmenu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ if(a.id!=='mConnect') closeMenu(); }); });
 
   // Flagship CTA → ask CUSTOS about the subscription
   var flagCta=document.getElementById('flagCta');
