@@ -69,7 +69,7 @@
   .action-card{border:1px solid var(--border-hover);background:linear-gradient(180deg,rgba(212,175,105,0.07),rgba(15,15,18,0.5));padding:14px 16px;margin-left:40px}
   .ac-title{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:11px}
   .ac-steps{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .ac-step{background:var(--gold);color:var(--obsidian);border:none;font-family:var(--f-ui);font-weight:600;font-size:12.5px;padding:9px 14px;cursor:pointer;transition:background .2s}
+  .ac-step{background:var(--gold);color:var(--obsidian);border:none;font-family:var(--f-ui);font-weight:600;font-size:12.5px;padding:9px 14px;cursor:pointer;transition:background .2s;text-decoration:none;display:inline-block}
   .ac-step:hover{background:var(--gold-bright)}
   .ac-step.done{background:var(--green)}
   .ac-step:disabled{opacity:.6;cursor:default}
@@ -264,6 +264,7 @@
             if(j.meta){ setStatus(j.meta.tier + ' · ' + j.meta.remaining + ' left'); }
             if(j.tools && !full) bubble.innerHTML = '<span class="typing">consulting the ledger — '+j.tools.join(', ')+'…</span>';
             if(j.action) renderAction(j.action);
+            if(j.ramp) renderRamp(j.ramp);
             if(j.t){ full += j.t; bubble.innerHTML = fmtBody(full); scrollDown(); }
           }catch(err){}
         }
@@ -319,6 +320,15 @@
       var a=document.createElement('a'); a.href='https://basescan.org/tx/'+hash; a.target='_blank'; a.rel='noopener'; a.className='ac-tx'; a.textContent='view tx ↗';
       btn.parentNode.appendChild(a);
     }catch(e){ btn.disabled=false; btn.textContent=label; alert((e&&e.message)||'Transaction rejected.'); }
+  }
+  function renderRamp(ramp){
+    var card=document.createElement('div'); card.className='action-card';
+    var title='CUSTOS prepared a '+ramp.kind+(ramp.provider?(' · '+ramp.provider):'');
+    var q = ramp.summary ? '<div class="ac-note" style="margin:0 0 11px">'+esc(ramp.summary)+'</div>' : '';
+    card.innerHTML='<div class="ac-title">'+title+'</div>'+q+
+      '<div class="ac-steps"><a class="ac-step ac-link" href="'+ramp.url+'" target="_blank" rel="noopener">Open '+(ramp.kind==='on-ramp'?'buy':'sell')+' checkout ↗</a></div>'+
+      '<div class="ac-note">Completed with the licensed provider — CUSTOS never touches your fiat.</div>';
+    thread.appendChild(card); scrollDown();
   }
   function renderAction(action){
     var card=document.createElement('div'); card.className='action-card';
