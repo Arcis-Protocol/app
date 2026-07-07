@@ -241,8 +241,10 @@
     try{
       var body = { messages: msgs };
       if(/^0x[0-9a-fA-F]{40}$/.test(connectedAddr||'')) body.address = connectedAddr;
+      var headers = {'Content-Type':'application/json'};
+      if(sessionToken) headers['Authorization'] = 'Bearer '+sessionToken;
       var r = await fetch(API+'/api/custos/chat', {
-        method:'POST', headers:{'Content-Type':'application/json'},
+        method:'POST', headers:headers,
         body: JSON.stringify(body), signal: controller.signal
       });
       if(!r.ok || !r.body) throw new Error('http '+r.status);
@@ -259,6 +261,7 @@
           if(!line) continue;
           try{
             var j = JSON.parse(line.slice(5).trim());
+            if(j.meta){ setStatus(j.meta.tier + ' · ' + j.meta.remaining + ' left'); }
             if(j.tools && !full) bubble.innerHTML = '<span class="typing">consulting the ledger — '+j.tools.join(', ')+'…</span>';
             if(j.action) renderAction(j.action);
             if(j.t){ full += j.t; bubble.innerHTML = fmtBody(full); scrollDown(); }
@@ -328,16 +331,31 @@
     scrollDown();
   }
 
-  /* ---------- wallet connect ---------- */
+  /* ---------- wallet connect + governance sign-in ---------- */
+  var sessionToken = null, govTier = null;
   function shorten(a){ return a.slice(0,6)+'…'+a.slice(-4); }
+  function setStatus(text){ document.getElementById('statusText').textContent = text; }
   function updateWalletUI(){
     var w=document.getElementById('wbtn');
     if(connectedAddr){ w.textContent=shorten(connectedAddr); w.classList.add('connected'); }
     else { w.textContent='Connect'; w.classList.remove('connected'); }
   }
-  async function connectWallet(){ try{ connectedAddr = await ensureWallet(); updateWalletUI(); }catch(e){ alert((e&&e.message)||'Could not connect a wallet.'); } }
+  async function signIn(address){
+    try{
+      var message = "Arcis · CUSTOS session\nProve you control this wallet to set your standing with CUSTOS.\n\naddress: "+address+"\nissued: "+Date.now()+"\nnonce: "+Math.random().toString(36).slice(2);
+      var signature = await window.ethereum.request({ method:'personal_sign', params:[message, address] });
+      var r = await fetch(API+'/api/custos/session', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:address, message:message, signature:signature})});
+      var j = await r.json();
+      if(j && j.token){ sessionToken=j.token; govTier=j; setStatus(j.tier+' · '+j.hourlyLimit+'/hr'); }
+      else setStatus('CUSTOS · online');
+    }catch(e){ setStatus('CUSTOS · online'); }   // declined signing → anonymous limits
+  }
+  async function connectWallet(){
+    try{ connectedAddr = await ensureWallet(); updateWalletUI(); await signIn(connectedAddr); }
+    catch(e){ alert((e&&e.message)||'Could not connect a wallet.'); }
+  }
   document.getElementById('wbtn').addEventListener('click', connectWallet);
-  if(window.ethereum && window.ethereum.on){ window.ethereum.on('accountsChanged', function(a){ connectedAddr=(a&&a[0])?a[0]:null; updateWalletUI(); }); }
+  if(window.ethereum && window.ethereum.on){ window.ethereum.on('accountsChanged', function(a){ connectedAddr=(a&&a[0])?a[0]:null; sessionToken=null; govTier=null; updateWalletUI(); setStatus('CUSTOS · online'); if(connectedAddr) signIn(connectedAddr); }); }
 
   /* ---------- connectivity status ---------- */
   function showOffline(off){
