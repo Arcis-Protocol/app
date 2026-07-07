@@ -96,6 +96,32 @@
   .socials a{color:var(--muted);display:inline-flex;transition:color .2s}.socials a:hover{color:var(--gold)}
   .socials svg{width:16px;height:16px;fill:currentColor}
   @media(max-width:560px){.hero h1{font-size:44px}.nav-links{display:none}}
+  .section{margin-top:46px}
+  .sh{font-family:var(--font-display);font-weight:500;font-size:32px;color:var(--gold);letter-spacing:0.02em}
+  .sd{font-size:13.5px;color:var(--muted);margin-top:6px;max-width:640px}
+  .tbar{display:flex;gap:10px;margin-top:18px;max-width:520px}
+  .tbar input{flex:1;background:var(--obsidian);border:1px solid var(--border);color:var(--ivory);font-family:var(--font-mono);font-size:13px;padding:10px 12px;outline:none}
+  .tbar input:focus{border-color:var(--border-hover)}
+  .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:20px}
+  .tcell{background:var(--stone);padding:18px 16px}
+  .tv{font-family:var(--font-display);font-size:26px;color:var(--ivory);line-height:1}
+  .tv.gold{color:var(--gold)}.tv.green{color:var(--green)}
+  .tl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:8px}
+  .tnote{font-size:11.5px;color:var(--muted);margin-top:12px}
+  .flag{display:flex;justify-content:space-between;align-items:center;gap:20px;border:1px solid var(--border-hover);
+    background:linear-gradient(180deg,rgba(212,175,105,0.06),rgba(15,15,18,0.4));padding:22px 24px;margin-top:20px}
+  .flag-eyebrow{font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .flag-title{font-family:var(--font-display);font-size:26px;color:var(--ivory);margin-top:8px}
+  .flag-desc{font-size:13px;color:var(--muted);margin-top:8px;max-width:560px;line-height:1.5}
+  .flag-price{text-align:right;white-space:nowrap}
+  .flag-price span{font-family:var(--font-display);font-size:40px;color:var(--gold)}
+  .flag-price small{display:block;font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px 20px;margin-top:22px}
+  .cat{border-top:1px solid var(--border);padding-top:12px}
+  .cat h4{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .cat ul{list-style:none}
+  .cat li{font-size:12.5px;color:var(--muted);padding:3px 0}
+  @media(max-width:560px){.tgrid{grid-template-columns:1fr 1fr}.flag{flex-direction:column;align-items:flex-start}.flag-price{text-align:left}}
 </style>
 </head>
 <body>
@@ -148,6 +174,38 @@
   </section>
 
   <p class="disclaimer">CUSTOS reads live on-chain data and explains the protocol. It is not a licensed financial advisor, does not give personalized investment advice, and never moves funds through chat — act via the <a href="/dashboard" style="color:var(--muted);text-decoration:underline">dashboard</a>.</p>
+
+  <section class="section" id="treasury">
+    <h2 class="sh">Your Managed Treasury</h2>
+    <p class="sd">Enter a wallet to see the position CUSTOS stewards — live value, rewards, credit headroom, and liquidity.</p>
+    <div class="tbar">
+      <input id="tAddr" placeholder="0x…" spellcheck="false" />
+      <button id="tLoad" class="send">Load</button>
+    </div>
+    <div class="tgrid" id="tGrid" style="display:none">
+      <div class="tcell"><div class="tv gold" id="tValue">—</div><div class="tl">Position Value</div></div>
+      <div class="tcell"><div class="tv" id="tEarned">—</div><div class="tl">Rewards Earned</div></div>
+      <div class="tcell"><div class="tv" id="tNet">—</div><div class="tl">Net Deposited</div></div>
+      <div class="tcell"><div class="tv" id="tCredit">—</div><div class="tl">Credit Headroom</div></div>
+      <div class="tcell"><div class="tv" id="tLiq">—</div><div class="tl">Vault Liquidity</div></div>
+      <div class="tcell"><div class="tv" id="tSince">—</div><div class="tl">Earning</div></div>
+    </div>
+    <p class="tnote" id="tNote"></p>
+  </section>
+
+  <section class="section" id="hire">
+    <h2 class="sh">Hire CUSTOS</h2>
+    <p class="sd">37 services, settled in USDC over ACP — from a single report to running your entire treasury.</p>
+    <div class="flag">
+      <div>
+        <div class="flag-eyebrow">Flagship subscription</div>
+        <div class="flag-title">Managed Treasury — CUSTOS Steward</div>
+        <div class="flag-desc">CUSTOS runs your entire treasury: idle-capital deployment, yield capture, credit-headroom management, liquidity guarding, and risk alerts — with a digest every cycle.</div>
+      </div>
+      <div class="flag-price"><span>$250</span><small>/ month</small></div>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </section>
 </div>
 
 <footer>
@@ -258,6 +316,54 @@
   document.getElementById('chips').addEventListener('click', function(e){
     if(e.target.classList.contains('chip')) send(e.target.getAttribute('data-q'));
   });
+  // ── Hire CUSTOS storefront ──
+  var CATALOG = {
+    'Yield & Vault':['Rewards Statement','APY Forecast','Reserve Health','Deposit Optimizer','Harvest Status','Yield Comparison'],
+    'Credit':['Reputation Tier Lookup','Borrow Simulation','Loan Health Monitor','Credit Line Setup'],
+    'Bonds':['Revenue Bond Structuring','Bond Health Check','Bond Investor Brief'],
+    'Keeper / Ops':['Keeper-as-a-Service','Gas Sentinel','Treasury Digest'],
+    'Discovery / Identity':['Know-Your-Agent Check','Identity Registration','Peer Benchmark','Vault Discovery'],
+    'Market':['Treasury Market Brief','Stablecoin Yield Radar'],
+    'Integration':['ATI Integration Audit','MCP Setup','Integration Walkthrough'],
+    'Advisory':['Treasury Strategy Session','Treasury Report','Treasury Management','Idle-to-Productive Migration']
+  };
+  (function(){
+    var g=document.getElementById('catGrid'),h='';
+    for(var k in CATALOG){ h+='<div class="cat"><h4>'+k+'</h4><ul>'+CATALOG[k].map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'; }
+    g.innerHTML=h;
+  })();
+
+  // ── Managed Treasury digest ──
+  var tAddr=document.getElementById('tAddr');
+  function usd(x){ return x==null?'—':'$'+(Number(x)/1e6).toLocaleString(undefined,{maximumFractionDigits:2}); }
+  async function loadTreasury(){
+    var a=tAddr.value.trim();
+    if(!/^0x[0-9a-fA-F]{40}$/.test(a)){ document.getElementById('tNote').textContent='Enter a valid 0x address.'; return; }
+    document.getElementById('tNote').textContent='Reading the chain…';
+    try{
+      var p=await fetch(API+'/api/position?address='+a).then(function(r){return r.json();});
+      var v=await fetch(API+'/api/vault').then(function(r){return r.json();}).catch(function(){return{};});
+      var val=p.liveValue!=null?Number(p.liveValue):Number(p.value||0);
+      document.getElementById('tValue').textContent=usd(val);
+      if(p.netDeposited!=null){
+        var net=Number(p.netDeposited), earned=(p.earned!=null?Number(p.earned):(val-net)), pct=net>0?(earned/net*100):0;
+        var eEl=document.getElementById('tEarned');
+        eEl.textContent=(earned>=0?'+':'\u2212')+'$'+Math.abs(earned/1e6).toLocaleString(undefined,{maximumFractionDigits:2})+' ('+(pct>=0?'+':'')+pct.toFixed(2)+'%)';
+        eEl.className='tv '+(earned>0?'green':'gold');
+        document.getElementById('tNet').textContent=usd(net);
+      } else { document.getElementById('tEarned').textContent='—'; document.getElementById('tNet').textContent='—'; }
+      document.getElementById('tCredit').textContent = val>0 ? '~'+usd(val*0.5) : '—';
+      if(v.reserveBalance!=null && v.totalAssets!=null && Number(v.totalAssets)>0){
+        document.getElementById('tLiq').textContent=Math.round(Number(v.reserveBalance)/Number(v.totalAssets)*100)+'% reserve';
+      } else { document.getElementById('tLiq').textContent='—'; }
+      if(p.firstDepositTs){ var d=new Date(p.firstDepositTs*1000); var days=Math.max(0,Math.floor((Date.now()/1000-p.firstDepositTs)/86400)); var s=document.getElementById('tSince'); s.textContent=days+' day'+(days===1?'':'s'); s.title='since '+d.toLocaleDateString(); }
+      else document.getElementById('tSince').textContent='—';
+      document.getElementById('tGrid').style.display='grid';
+      document.getElementById('tNote').textContent = val>0 ? 'Stewarded by CUSTOS · live value updates each block. Subscribe to Managed Treasury and CUSTOS runs it end-to-end.' : 'No Arcis position yet for this wallet.';
+    }catch(e){ document.getElementById('tNote').textContent='Could not load — try again shortly.'; }
+  }
+  document.getElementById('tLoad').addEventListener('click', loadTreasury);
+  tAddr.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); loadTreasury(); } });
 </script>
 </body>
 </html>
