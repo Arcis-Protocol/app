@@ -224,10 +224,25 @@
       var body = { messages: history };
       if(/^0x[0-9a-fA-F]{40}$/.test(addr)) body.address = addr;
       var r = await fetch(API+'/api/custos/chat', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-      var d = await r.json();
-      var reply = d.reply || d.error || 'CUSTOS did not respond.';
-      t.querySelector('.bubble').innerHTML = fmtBody(reply);
-      history.push({role:'assistant', content:reply});
+      var bubble = t.querySelector('.bubble');
+      var reader = r.body.getReader(); var dec = new TextDecoder(); var sbuf=''; var full='';
+      while(true){
+        var chunk = await reader.read(); if(chunk.done) break;
+        sbuf += dec.decode(chunk.value, {stream:true});
+        var idx;
+        while((idx = sbuf.indexOf('\n\n')) >= 0){
+          var evt = sbuf.slice(0,idx); sbuf = sbuf.slice(idx+2);
+          var line = evt.split('\n').find(function(l){return l.indexOf('data:')===0;});
+          if(!line) continue;
+          try{
+            var j = JSON.parse(line.slice(5).trim());
+            if(j.t){ full += j.t; bubble.innerHTML = fmtBody(full); log.scrollTop = log.scrollHeight; }
+          }catch(err){}
+        }
+      }
+      if(!full) full = 'CUSTOS did not respond.';
+      bubble.innerHTML = fmtBody(full);
+      history.push({role:'assistant', content:full});
     }catch(e){
       t.querySelector('.bubble').innerHTML = 'The citadel is unreachable right now. Try again shortly.';
     }finally{
