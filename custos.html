@@ -236,6 +236,7 @@
           if(!line) continue;
           try{
             var j = JSON.parse(line.slice(5).trim());
+            if(j.tools && !full){ bubble.innerHTML = '<span class="typing">consulting the ledger — '+j.tools.join(', ')+'…</span>'; }
             if(j.t){ full += j.t; bubble.innerHTML = fmtBody(full); log.scrollTop = log.scrollHeight; }
           }catch(err){}
         }
